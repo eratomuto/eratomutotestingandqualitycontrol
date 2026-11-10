@@ -135,8 +135,8 @@ kbd{font:600 14px/1 var(--mono);padding:3px 5px;border-radius:3px;background:var
 .ot.mine{background:var(--red);color:#fff}
 .opt.no .on,.opt.no .om{opacity:.65}
 .why{margin-top:16px;color:var(--ink-2);font-size:16px}
-.vs{margin-top:10px;font-size:16px;padding:10px 14px;border-left:5px solid var(--blue);background:var(--blue-tint);border-radius:0 6px 6px 0}
-.vs .worse{color:var(--red-dk)}
+.why b{color:var(--ink)}
+.why .worse{color:var(--red-dk)}
 .actions{display:flex;flex-direction:column;gap:10px;margin-top:20px}
 .actions-row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
 details.more{margin-top:20px;background:var(--paper);border:1px solid var(--rule);border-radius:10px}
@@ -299,7 +299,6 @@ details.hosp > summary .muted{font-weight:400;font-size:14px;margin-left:6px}
     </div>
     <p class="check" id="checkNote" hidden></p>
     <p class="why" id="whyText"></p>
-    <p class="vs" id="verdict" hidden></p>
     <div class="actions">
       <div class="alert" id="sendErr" role="alert" hidden></div>
       <button class="btn-huge" id="sendBtn" type="button">Send referral →</button>
@@ -976,7 +975,9 @@ function triageSource(p) {
   if (mocked) return {mocked:true, check:true, msg:`${S.aiLive ? 'The AI couldn\'t read these notes' : 'No AI key is set up'}, so the urgency is a keyword guess. Make sure it's right before you send.`};
   return {mocked:false, check:false, msg:''};
 }
-function whyText(p, r, hub, n) {
+// The reasoning only. The figures (percent full, specialists free, wait, drive) are not repeated here: they live
+// in the tiles and sub-line above, the picker, and the score table.
+function whyText(p, r, hub) {
   const sp = plainSp(p.primary_specialty_required);
   const rule = {
     high:`Emergency, so RUSH went for a free ${sp} specialist first.`,
@@ -985,7 +986,7 @@ function whyText(p, r, hub, n) {
   }[r.tier];
   const others = r.ranked.filter(x => x.hub.hub_id !== hub.hub_id);
   const next = others.length ? ` Runner-up: ${others[0].hub.name}.` : ` It's the only one offering ${sp} care.`;
-  return `Why: ${rule} ${hub.name} is ${Math.round(loadPct(hub))}% full${n ? ` with ${n} specialist${n === 1 ? '' : 's'} free` : ''}.${next}`;
+  return `Why: ${rule}${next}`;
 }
 // where the referral will go: RUSH's pick, or the hospital the clinician chose instead
 function target() {
@@ -1033,9 +1034,10 @@ function renderTarget() {
   $('#fWaitS').textContent = `around ${inDays(t.wait)}`;
   $('#fNeed').textContent = p.primary_specialty_required;
   $('#fNeedS').textContent = plainSp(p.primary_specialty_required) + ' care';
-  $('#whyText').textContent = t.mine ? `RUSH's reasoning for its own pick: ${whyText(p, r, r.best.hub, r.best.n).replace(/^Why: /, '')}` : whyText(p, r, hub, t.n);
+  // one line: the reasoning, then the comparison with Halifax (both used to be separate lines)
+  const why = t.mine ? `RUSH's reasoning for its own pick: ${whyText(p, r, r.best.hub).replace(/^Why: /, '')}` : whyText(p, r, hub);
   const v = halifaxVerdict(t);
-  $('#verdict').innerHTML = v; $('#verdict').hidden = !v;
+  $('#whyText').innerHTML = esc(why) + (v ? ' ' + v : '');
   if ($('#more').open) drawMap(hub, false);
   renderPicker();
   if (S.view === 'v2') cmdForView();
