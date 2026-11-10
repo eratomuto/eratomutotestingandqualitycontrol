@@ -82,6 +82,10 @@ textarea.input{resize:vertical;min-height:150px}
 #zip{max-width:220px;text-transform:uppercase;font-family:var(--mono)}
 #town{max-width:320px}
 #cancelFindBtn{width:100%;margin-top:10px}
+.fix{margin-top:16px;padding:20px}
+.fix h3{font-size:20px;font-weight:900;margin-bottom:12px}
+#fixUrg,#fixSpec{max-width:360px}
+.fix .alert{margin:0 0 12px}
 .help{font-size:14px;color:var(--ink-2)}
 .help.warn{color:var(--red-dk)}
 .err{font-size:15px;color:var(--red);font-weight:700}
@@ -306,7 +310,18 @@ details.hosp > summary .muted{font-weight:400;font-size:14px;margin-left:6px}
       <button class="btn-huge" id="sendBtn" type="button">Send referral →</button>
       <div class="actions-row">
         <button class="btn-ghost" id="pickBtn" type="button" aria-expanded="false" aria-controls="picker">Send somewhere else</button>
+        <button class="btn-ghost" id="fixBtn" type="button" aria-expanded="false" aria-controls="fixPanel">Change urgency or specialty</button>
         <button class="btn-ghost" id="backBtn" type="button">← Change the notes</button>
+      </div>
+    </div>
+    <div class="card fix" id="fixPanel" hidden>
+      <h3>Change urgency or specialty</h3>
+      <div class="field"><label for="fixUrg">Urgency</label><select id="fixUrg" class="input"></select></div>
+      <div class="field"><label for="fixSpec">Specialty</label><select id="fixSpec" class="input"></select></div>
+      <div class="alert" id="fixMsg" role="alert" hidden></div>
+      <div class="actions-row">
+        <button class="btn-ghost" id="fixApply" type="button">Apply</button>
+        <button class="btn-ghost" id="fixCancel" type="button">Cancel</button>
       </div>
     </div>
     <div class="card picker" id="picker" hidden>
@@ -476,6 +491,8 @@ const S = {
   findSeq: 0, findCtl: null,   // findSeq numbers each Find; only the latest one may change the screen
   waitTimer: null, waitSlow: false,   // the "taking longer than usual" timer, and whether it has fired
   shownAt: -Infinity,       // when the current screen appeared (performance.now()), for the shortcut cooldown
+  doctorUrgency: false, doctorSpecialty: false,   // the doctor changed urgency / specialty on the review screen (F1)
+  fixBlocked: false,        // the doctor asked for a specialty no hospital offers: Send stays off until it is fixed
   practiceReceipt: false,   // the current receipt came from practice mode: the server never got it
   running: false, matchedLive: false,   // matchedLive: the current match came from the real server
   near: null,      // {zip, town, typed}: the code came from the Nearest town picker; typed = the doctor's own code, or ''
@@ -918,6 +935,7 @@ async function findHospital() {
   }
 
   S.running = true; S.referral = null; S.choice = null;
+  S.doctorUrgency = false; S.doctorSpecialty = false; closeFix();   // a new Find starts from the new triage result
   S.nearUsed = nearIn(S.near, zip) ? S.near : null;
   const btn = $('#findBtn'), cancelBtn = $('#cancelFindBtn');
   const myId = ++S.findSeq, ctl = S.findCtl = new AbortController(), stale = () => myId !== S.findSeq;
@@ -978,6 +996,7 @@ function driveText(km) {
 }
 function triageSource(p) {
   const mocked = (p.key_symptoms || []).some(s => /^mock/.test(s)) || (p.acute_risks || []).includes('mock_risk');
+  if (S.doctorUrgency) return {mocked, check:false, msg:''};   // the doctor set the urgency, so it is no longer a guess
   if (S.online === false) return {mocked:false, check:true, msg:'Practice mode guessed the urgency from keywords. Make sure it\'s right before you send.'};
   if (mocked) return {mocked:true, check:true, msg:`${S.aiLive ? 'The AI couldn\'t read these notes' : 'No AI key is set up'}, so the urgency is a keyword guess. Make sure it's right before you send.`};
   // an AI-style result that picked out nothing medical (no symptom, risk or medication): same slot, same rules
@@ -1114,7 +1133,8 @@ function togglePicker(open = $('#picker').hidden) {
 // While a send is in flight nothing on step 2 may change the target or move the doctor away. Disabled buttons
 // look disabled and can't be focused or clicked. The demo buttons count too: they re-pick the suggestion.
 function lockStep2(on) {
-  [$('#backBtn'), $('#pickBtn'), $('#surgeBtn'), $('#resetBtn'), ...$$('#pickList .opt'), ...$$('#useRush')]
+  [$('#backBtn'), $('#pickBtn'), $('#surgeBtn'), $('#resetBtn'), $('#fixBtn'), $('#fixApply'), $('#fixCancel'), $('#fixUrg'), $('#fixSpec'),
+    ...$$('#pickList .opt'), ...$$('#useRush')]
     .forEach(el => { el.disabled = on; });
 }
 // The score table is a keyboard tab stop only while it actually scrolls sideways (a closed drawer or a table
@@ -1156,7 +1176,7 @@ function renderMatch() {
 
   togglePicker(false);
   $('#sendErr').hidden = true;
-  $('#sendBtn').disabled = false; $('#sendBtn').textContent = 'Send referral →';
+  $('#sendBtn').disabled = !!S.fixBlocked; $('#sendBtn').textContent = 'Send referral →';
 }
 
 /* ================= map ================= */
@@ -1222,6 +1242,51 @@ function drawMap(pick, animate) {
 }
 
 /* ================= step 3 ================= */
+/* ================= the doctor corrects urgency or specialty ================= */
+// An inline panel (not a modal). Apply re-runs the existing route(), drops any hospital override (the basis
+// changed) and re-renders the whole review screen from the corrected patient. No thresholds or advice are added.
+function openFix() {
+  const p = S.patient;
+  $('#fixUrg').value = String(p.urgency_score);
+  $('#fixSpec').value = p.primary_specialty_required;
+  $('#fixMsg').hidden = true;
+  $('#fixPanel').hidden = false;
+  $('#fixBtn').setAttribute('aria-expanded', 'true');
+  $('#fixUrg').focus();
+}
+function closeFix() {
+  S.fixBlocked = false;
+  $('#fixPanel').hidden = true; $('#fixMsg').hidden = true;
+  $('#fixBtn').setAttribute('aria-expanded', 'false');
+  if (!S.sending) $('#sendBtn').disabled = false;
+}
+function applyFix() {
+  if (S.sending) return;
+  const p = S.patient, u = +$('#fixUrg').value, sp = $('#fixSpec').value;
+  const uChanged = u !== p.urgency_score, sChanged = sp !== p.primary_specialty_required;
+  if (!uChanged && !sChanged) { closeFix(); $('#fixBtn').focus(); return; }   // nothing changed, so nothing else changes
+  const np = {...p, urgency_score:u, primary_specialty_required:sp};
+  const plan = route(np, S.hubs);
+  if (!plan.best) {                                  // nobody offers it: say so here, keep Send off, keep the panel open
+    S.fixBlocked = true; $('#sendBtn').disabled = true;
+    const m = $('#fixMsg');
+    m.innerHTML = `<b>No hospital in RUSH offers ${esc(plainSp(sp))} care.</b>Arrange it by phone.`;
+    m.hidden = false;
+    cmd('STEP 2 OF 3', `Send is off. ${K('CHANGE THE SPECIALTY')} or hit Cancel.`, 'bad');
+    return;
+  }
+  S.patient = np; S.plan = plan; S.choice = null;    // the basis changed, so any hospital override is dropped
+  if (uChanged) S.doctorUrgency = true;
+  if (sChanged) S.doctorSpecialty = true;
+  closeFix();
+  renderMatch();
+  S.shownAt = performance.now();                     // the shortcut cooldown covers this change too
+  const what = uChanged && sChanged ? `You set urgency to ${u}/10 and the specialty to ${plainSp(sp)} care`
+    : uChanged ? `You set urgency to ${u}/10 (${TIER_NAME[urgTier(u)]})` : `You set the specialty to ${plainSp(sp)} care`;
+  cmd('STEP 2 OF 3 · YOU CHANGED IT', `${what}. Check it, then hit ${K('SEND REFERRAL')}.`, 'warn');
+  $('#fixBtn').focus();
+}
+
 // The send-failure box sits directly above the Send button; scrolling it into view keeps it below the command bar.
 function showSendErr(html) {
   const box = $('#sendErr');
@@ -1229,7 +1294,7 @@ function showSendErr(html) {
   box.scrollIntoView({block:'nearest', behavior: reduced() ? 'auto' : 'smooth'});
 }
 async function sendReferral() {
-  if (!S.patient || S.referral || S.sending) return;
+  if (!S.patient || S.referral || S.sending || S.fixBlocked) return;   // fixBlocked: the chosen specialty has no hospital
   if (!ZIPS[S.patient.home_clinic_zip]) {      // can't happen from step 1, but an unknown code must never go out
     showSendErr('<b>Not sent.</b>RUSH doesn\'t know this postal code. Go back and pick the nearest town.');
     return;
@@ -1301,6 +1366,7 @@ async function copyReceipt() {
 }
 function newPatient() {
   S.patient = null; S.plan = null; S.choice = null; S.referral = null;
+  S.doctorUrgency = false; S.doctorSpecialty = false; closeFix();
   S.near = null; S.nearUsed = null;
   $('#notes').value = ''; $('#zip').value = ''; updateZipHelp();
   $$('.ex').forEach(b => b.setAttribute('aria-pressed', 'false'));
@@ -1311,6 +1377,7 @@ function newPatient() {
 function backToNotes() {
   if (S.sending) return;
   S.patient = null; S.plan = null; S.choice = null;
+  S.doctorUrgency = false; S.doctorSpecialty = false; closeFix();
   renderHospitals();
   show('v1', $('#notes'));
 }
@@ -1409,7 +1476,13 @@ function boot() {
   tbl.addEventListener('focus', () => { if (tbl.matches(':focus-visible')) tbl.scrollIntoView({block:'start', inline:'nearest', behavior:'auto'}); });
   $('#sendBtn').addEventListener('click', sendReferral);
   $('#backBtn').addEventListener('click', backToNotes);
-  $('#pickBtn').addEventListener('click', () => { if (!S.sending) togglePicker(); });
+  $('#pickBtn').addEventListener('click', () => { if (!S.sending) { closeFix(); togglePicker(); } });
+  // the correction panel: urgency uses the existing tier names, specialty the 8 known ones
+  $('#fixUrg').innerHTML = Array.from({length:10}, (_, i) => `<option value="${i + 1}">${i + 1} · ${TIER_NAME[urgTier(i + 1)]}</option>`).join('');
+  $('#fixSpec').innerHTML = Object.keys(PLAIN).map(sp => `<option value="${esc(sp)}">${esc(specLabel(sp))}</option>`).join('');
+  $('#fixBtn').addEventListener('click', () => { if (S.sending) return; if ($('#fixPanel').hidden) { togglePicker(false); openFix(); } else closeFix(); });
+  $('#fixApply').addEventListener('click', applyFix);
+  $('#fixCancel').addEventListener('click', () => { if (S.sending) return; closeFix(); $('#fixBtn').focus(); });
   $('#pickList').addEventListener('click', e => { const b = e.target.closest('.opt'); if (b) choose(b.dataset.id); });
   for (const id of ['#overrideNote', '#mismatchNote']) $(id).addEventListener('click', e => { if (e.target.id === 'useRush') choose(S.plan.best.hub.hub_id); });
   $('#copyBtn').addEventListener('click', copyReceipt);

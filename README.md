@@ -43,6 +43,7 @@ The black bar at the top always says the one thing to do next.
 1. **Paste the doctor's notes and the clinic postal code, then hit Find hospital.** No notes? Click an example (or press F1/F2/F3). If it takes more than about 8 seconds, the black bar says so. **Cancel** stops it and keeps everything you typed.
 2. **Check the suggested hospital, then hit Send referral.** If sending takes more than about 8 seconds, wait and don't press Send again; it may still arrive. If the bar says "check first", the urgency came from keyword matching, so make sure it's right.
    - **Send somewhere else** lists every hospital so you can pick another. The receipt then records that you chose it and what RUSH suggested.
+   - **Change urgency or specialty** lets you correct what RUSH read. Pick the urgency (1–10) and the specialty, then **Apply**. RUSH re-picks the hospital and drops any hospital you chose earlier. The receipt says the urgency or specialty was set by you. If no hospital offers the specialty, Send stays off until you change it or cancel.
    - **Show the map and how every hospital scored** shows the route and the full score table.
 3. **Done.** Copy or print the receipt, then hit **Next patient**.
 
