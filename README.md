@@ -40,8 +40,8 @@ Without a key, or if a call fails, triage falls back to simple keyword matching 
 
 The black bar at the top always says the one thing to do next.
 
-1. **Paste the doctor's notes and the clinic postal code, then hit Find hospital.** No notes? Click an example (or press F1/F2/F3).
-2. **Check the suggested hospital, then hit Send referral.** If the bar says "check first", the urgency came from keyword matching, so make sure it's right.
+1. **Paste the doctor's notes and the clinic postal code, then hit Find hospital.** No notes? Click an example (or press F1/F2/F3). If it takes more than about 8 seconds, the black bar says so. **Cancel** stops it and keeps everything you typed.
+2. **Check the suggested hospital, then hit Send referral.** If sending takes more than about 8 seconds, wait and don't press Send again; it may still arrive. If the bar says "check first", the urgency came from keyword matching, so make sure it's right.
    - **Send somewhere else** lists every hospital so you can pick another. The receipt then records that you chose it and what RUSH suggested.
    - **Show the map and how every hospital scored** shows the route and the full score table.
 3. **Done.** Copy or print the receipt, then hit **Next patient**.

@@ -82,6 +82,7 @@ main.wrap{padding-top:28px;padding-bottom:60px}
 textarea.input{resize:vertical;min-height:150px}
 #zip{max-width:220px;text-transform:uppercase;font-family:var(--mono)}
 #town{max-width:320px}
+#cancelFindBtn{width:100%;margin-top:10px}
 .help{font-size:14px;color:var(--ink-2)}
 .help.warn{color:var(--red-dk)}
 .err{font-size:15px;color:var(--red);font-weight:700}
@@ -272,6 +273,7 @@ details.hosp > summary .muted{font-weight:400;font-size:14px;margin-left:6px}
         <span class="help">Pick the closest one. Distances will be approximate.</span>
       </div>
       <button class="btn-huge" id="findBtn" type="button">Find hospital →</button>
+      <button class="btn-ghost" id="cancelFindBtn" type="button" hidden>Cancel</button>
       <p class="kbd-tip"><kbd>Ctrl</kbd> + <kbd>Enter</kbd> works too</p>
       <div class="alert" id="findErr" role="alert" hidden></div>
     </div>
@@ -461,6 +463,8 @@ const S = {
   hubs: [], sig: {}, baseline: {},
   surged: new Set(), mock: null, provErr: false,
   patient: null, plan: null, choice: null, referral: null,
+  findSeq: 0, findCtl: null,   // findSeq numbers each Find; only the latest one may change the screen
+  waitTimer: null, waitSlow: false,   // the "taking longer than usual" timer, and whether it has fired
   shownAt: -Infinity,       // when the current screen appeared (performance.now()), for the shortcut cooldown
   practiceReceipt: false,   // the current receipt came from practice mode: the server never got it
   running: false, matchedLive: false,   // matchedLive: the current match came from the real server
@@ -608,6 +612,7 @@ class HttpError extends Error { constructor(status, msg) { super(msg); this.stat
 class Unreachable extends Error {            // no answer at all: refused, offline, or timed out
   constructor(cause) { super(cause && cause.message || 'no answer'); this.timedOut = !!cause && cause.name === 'AbortError'; }
 }
+class Cancelled extends Error { constructor() { super('cancelled by the doctor'); } }   // the doctor hit Cancel: not a server failure
 class RushError extends Error {              // a problem the page found itself: 'unreadable' | 'nospecialty'
   constructor(kind, detail, specialty) { super(detail); this.kind = kind; this.specialty = specialty; }
 }
@@ -617,10 +622,11 @@ function detailText(d) {
   if (Array.isArray(d)) return d.map(x => `${(x.loc || []).filter(k => k !== 'body').join('.')}: ${x.msg}`).join('; ');
   return JSON.stringify(d);
 }
-async function raw(method, path, {body, query, timeout = 4000} = {}) {
+async function raw(method, path, {body, query, timeout = 4000, signal} = {}) {
   let url = S.base.replace(/\/+$/, '') + path;
   if (query) url += '?' + new URLSearchParams(query);
   const ctl = new AbortController(), t = setTimeout(() => ctl.abort(), timeout);
+  if (signal) { if (signal.aborted) ctl.abort(); else signal.addEventListener('abort', () => ctl.abort(), {once:true}); }
   try {
     const res = await fetch(url, {method, signal:ctl.signal,
       headers: body ? {'content-type':'application/json'} : undefined, body: body ? JSON.stringify(body) : undefined});
@@ -636,6 +642,7 @@ async function api(method, path, opts = {}) {
   try { return await raw(method, path, opts); }
   catch (e) {
     if (e instanceof HttpError) throw e;
+    if (opts.signal && opts.signal.aborted) throw new Cancelled();   // the doctor cancelled: don't treat it as a lost server
     if (opts.live) throw new Unreachable(e);
     setOnline(false);
     return mockApi(method, path, opts);
@@ -857,6 +864,31 @@ function usePreset(i) {
   findHospital();
 }
 
+// After SLOW_WAIT_MS of waiting the screen says it is taking longer than usual. One timer at a time; it is
+// always cleared when the request ends or is cancelled. The message goes in the command bar (a polite live region).
+const SLOW_WAIT_MS = 8000;
+function startSlowTimer(onSlow) {
+  stopSlowTimer();
+  S.waitTimer = setTimeout(() => { S.waitSlow = true; onSlow(); }, SLOW_WAIT_MS);
+}
+function stopSlowTimer() { clearTimeout(S.waitTimer); S.waitTimer = null; S.waitSlow = false; }
+// Cancel (Find only). Aborts the request and puts step 1 back exactly as typed. Bumping findSeq makes any
+// answer that still arrives stale, so it can't change the screen.
+function cancelFind() {
+  if (!S.running) return;
+  S.findSeq++;
+  if (S.findCtl) S.findCtl.abort();
+  S.findCtl = null;
+  stopSlowTimer();
+  S.running = false;
+  $('#cancelFindBtn').hidden = true;
+  const btn = $('#findBtn');
+  btn.disabled = false; btn.textContent = 'Find hospital →';
+  cmd('STEP 1 OF 3', `Cancelled. Your notes are still here. Hit ${K('FIND HOSPITAL')} to try again.`);
+  btn.focus();
+  log('Find cancelled.');
+}
+
 async function findHospital() {
   if (S.running) return;
   const notes = $('#notes').value.trim(), zip = normZip($('#zip').value);
@@ -874,20 +906,30 @@ async function findHospital() {
 
   S.running = true; S.referral = null; S.choice = null;
   S.nearUsed = nearIn(S.near, zip) ? S.near : null;
-  const btn = $('#findBtn');
+  const btn = $('#findBtn'), cancelBtn = $('#cancelFindBtn');
+  const myId = ++S.findSeq, ctl = S.findCtl = new AbortController(), stale = () => myId !== S.findSeq;
+  cancelBtn.hidden = false;
+  if (document.activeElement === btn) cancelBtn.focus();     // the Find button is about to be disabled; don't drop focus
   btn.disabled = true; btn.textContent = 'Reading the notes…';
   $('#findErr').hidden = true;
   cmd('STEP 1 OF 3', 'Hang on. Reading the notes and checking hospitals', 'busy');
+  startSlowTimer(() => {
+    btn.textContent = 'Taking longer than usual…';
+    cmd('STEP 1 OF 3', 'Still reading the notes. This is taking longer than usual.', 'busy');
+  });
 
   const patient = {clinical_notes:notes, home_clinic_zip:zip};
-  const triP = api('POST', '/triage', {body:patient, timeout:35000});
-  const hubsP = api('GET', '/hubs');
+  const triP = api('POST', '/triage', {body:patient, timeout:35000, signal:ctl.signal});
+  const hubsP = api('GET', '/hubs', {signal:ctl.signal});
   triP.catch(() => {}); hubsP.catch(() => {});
   try {
     const tri = await triP;
+    if (stale()) return;                                      // cancelled or superseded: change nothing
     if (!tri || !tri.urgency_score || !tri.primary_specialty_required) throw new RushError('unreadable', 'triage returned no urgency or specialty');
-    btn.textContent = 'Checking hospitals…';
-    ingestHubs(await hubsP);
+    if (!S.waitSlow) btn.textContent = 'Checking hospitals…';
+    const hubs = await hubsP;
+    if (stale()) return;
+    ingestHubs(hubs);
     const plan = route(tri, S.hubs);
     if (!plan.best) throw new RushError('nospecialty', `no hospital offers ${tri.primary_specialty_required}`, tri.primary_specialty_required);
     S.patient = tri; S.plan = plan; S.matchedLive = S.online === true;
@@ -896,14 +938,21 @@ async function findHospital() {
     log(`Matched patient (urgency ${tri.urgency_score}/10) to ${plan.best.hub.name}.`);
     show('v2', $('#hospName'));
   } catch (e) {
+    if (stale()) return;
     const m = findMessage(e), box = $('#findErr');
     box.innerHTML = `<b>${esc(m.what)}</b>${esc(m.fix)}`;
     box.hidden = false;
     cmd('STEP 1 OF 3', m.bar, 'bad');
     log(`Couldn't match: ${detailOf(e)}`, true);
   } finally {
-    S.running = false;
-    btn.disabled = false; btn.textContent = 'Find hospital →';
+    if (!stale()) {                                           // a stale run must not touch the screen
+      stopSlowTimer();
+      const hadFocus = document.activeElement === cancelBtn;
+      cancelBtn.hidden = true;
+      if (hadFocus) btn.focus();                              // after an error, focus goes back to Find (on success it already moved)
+      S.running = false;
+      btn.disabled = false; btn.textContent = 'Find hospital →';
+    }
   }
 }
 
@@ -1141,6 +1190,11 @@ async function sendReferral() {
   btn.disabled = true; btn.textContent = 'Sending…';
   $('#sendErr').hidden = true;
   cmd('STEP 2 OF 3', 'Sending the referral', 'busy');
+  // no Cancel here on purpose: a send already on its way may still arrive
+  startSlowTimer(() => {
+    btn.textContent = 'Still sending. Don\'t press again.';
+    cmd('STEP 2 OF 3', 'Still sending. This is taking longer than usual. Don\'t press Send again.', 'busy');
+  });
   try {
     const want = target().hub;
     const ref = await api('POST', '/refer', {body:S.patient, query: S.choice ? {hub_id:S.choice} : undefined, timeout:35000, live:S.matchedLive});
@@ -1160,7 +1214,7 @@ async function sendReferral() {
     btn.disabled = false; btn.textContent = 'Send referral →';
     cmd('STEP 2 OF 3', m.bar, 'bad');
     log(`Referral not sent: ${detailOf(e)}`, true);
-  } finally { S.sending = false; }
+  } finally { stopSlowTimer(); S.sending = false; }
 }
 // the one demo warning: shown in the footer, and on anything that leaves the screen (copied text, printed page)
 const DEMO_NOTICE = 'DEMO: simulated hospitals, not a real referral. Don\'t use it for real clinical decisions.';
@@ -1281,6 +1335,7 @@ function boot() {
   $('#printDemo').textContent = DEMO_NOTICE;
   $('#footDemo').textContent = DEMO_NOTICE;
   $('#findBtn').addEventListener('click', findHospital);
+  $('#cancelFindBtn').addEventListener('click', cancelFind);
   $$('.ex').forEach(b => b.addEventListener('click', () => usePreset(+b.dataset.i)));
   $('#town').innerHTML = '<option value="">Choose a town</option>' + Object.entries(ZIPS)
     .sort((a, b) => a[1][2].localeCompare(b[1][2])).map(([z, v]) => `<option value="${z}">${esc(v[2])}</option>`).join('');
