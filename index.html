@@ -98,6 +98,7 @@ textarea.input{resize:vertical;min-height:150px}
 kbd{font:600 14px/1 var(--mono);padding:3px 5px;border-radius:3px;background:var(--band);border:1px solid var(--rule)}
 .alert{margin-top:16px;padding:14px 18px;border-left:6px solid var(--red);background:var(--red-tint);border-radius:0 6px 6px 0}
 .alert b{display:block}
+#sendErr{margin-top:0}   /* sits directly above the Send button, inside .actions */
 
 /* step 2 */
 .answer{text-align:center;padding:30px 24px 26px}
@@ -300,6 +301,7 @@ details.hosp > summary .muted{font-weight:400;font-size:14px;margin-left:6px}
     <p class="why" id="whyText"></p>
     <p class="vs" id="verdict" hidden></p>
     <div class="actions">
+      <div class="alert" id="sendErr" role="alert" hidden></div>
       <button class="btn-huge" id="sendBtn" type="button">Send referral →</button>
       <div class="actions-row">
         <button class="btn-ghost" id="pickBtn" type="button" aria-expanded="false" aria-controls="picker">Send somewhere else</button>
@@ -311,7 +313,6 @@ details.hosp > summary .muted{font-weight:400;font-size:14px;margin-left:6px}
       <p class="sub" id="pickSub"></p>
       <div id="pickList"></div>
     </div>
-    <div class="alert" id="sendErr" role="alert" hidden></div>
     <details class="more" id="more">
       <summary>Show the map and how every hospital scored</summary>
       <div class="inner">
@@ -784,19 +785,21 @@ function findMessage(e) {
     fix: 'Hit FIND HOSPITAL to try again. If it keeps happening, phone the hospital.',
     bar: `That didn't work. Hit ${K('FIND HOSPITAL')} again.`};
 }
+// Send failures: the box (above the Send button) says what happened; the command bar names the cause in a few
+// words and says what to do next.
 function sendMessage(e) {
   if (e instanceof Unreachable && e.timedOut) return {
     what: 'Not sure it sent.',
     fix: 'It may have gone through. Check with the hospital before you send again.',
-    bar: `Not sure it sent. ${K('CHECK WITH THE HOSPITAL')} first.`};
+    bar: `No answer in time. ${K('CHECK WITH THE HOSPITAL')} first.`};
   if (e instanceof Unreachable || isGateway(e)) return {
-    what: 'Not sent. Can\'t reach the server.',
-    fix: 'Check that RUSH is running. Then hit SEND REFERRAL again.',
-    bar: `Not sent. Check the server, then hit ${K('SEND REFERRAL')} again.`};
+    what: 'Not sent.',
+    fix: 'The server didn\'t answer, so nothing went out. Check that RUSH is running.',
+    bar: `Not sent. Can't reach the server. Check it, then hit ${K('SEND REFERRAL')}.`};
   return {
     what: 'Not sent.',
-    fix: 'The server couldn\'t take this referral. Hit SEND REFERRAL to try again. If it fails again, phone the hospital.',
-    bar: `It didn't send. Hit ${K('SEND REFERRAL')} to try again.`};
+    fix: 'The server couldn\'t take this referral. If it fails again, phone the hospital.',
+    bar: `Not sent. The server refused it. ${K('SEND REFERRAL')} to try again.`};
 }
 
 /* ================= step 1 ================= */
@@ -1188,11 +1191,16 @@ function drawMap(pick, animate) {
 }
 
 /* ================= step 3 ================= */
+// The send-failure box sits directly above the Send button; scrolling it into view keeps it below the command bar.
+function showSendErr(html) {
+  const box = $('#sendErr');
+  box.innerHTML = html; box.hidden = false;
+  box.scrollIntoView({block:'nearest', behavior: reduced() ? 'auto' : 'smooth'});
+}
 async function sendReferral() {
   if (!S.patient || S.referral || S.sending) return;
   if (!ZIPS[S.patient.home_clinic_zip]) {      // can't happen from step 1, but an unknown code must never go out
-    $('#sendErr').innerHTML = '<b>Not sent.</b>RUSH doesn\'t know this postal code. Go back and pick the nearest town.';
-    $('#sendErr').hidden = false;
+    showSendErr('<b>Not sent.</b>RUSH doesn\'t know this postal code. Go back and pick the nearest town.');
     return;
   }
   S.sending = true; lockStep2(true);
@@ -1219,8 +1227,7 @@ async function sendReferral() {
     refreshHospitals();
   } catch (e) {
     const m = sendMessage(e);
-    $('#sendErr').innerHTML = `<b>${esc(m.what)}</b>${esc(m.fix)}`;
-    $('#sendErr').hidden = false;
+    showSendErr(`<b>${esc(m.what)}</b>${esc(m.fix)}`);
     btn.disabled = false; btn.textContent = 'Send referral →';
     cmd('STEP 2 OF 3', m.bar, 'bad');
     log(`Referral not sent: ${detailOf(e)}`, true);
