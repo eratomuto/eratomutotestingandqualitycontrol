@@ -46,7 +46,7 @@ The black bar at the top always says the one thing to do next.
    - **Show the map and how every hospital scored** shows the route and the full score table.
 3. **Done.** Copy or print the receipt, then hit **Next patient**.
 
-`Ctrl + Enter` always presses the big blue button.
+`Ctrl + Enter` presses the big blue button on the first two screens. It does nothing on the receipt screen: hit **Next patient** with a click. Holding the keys down is ignored, so each screen needs a fresh press.
 
 At the bottom, **Hospital capacity (live)** shows how full each hospital is (refreshed every 5 seconds). **Demo: make a hospital busy** fills a random hospital up so you can watch the suggestion change; **Put hospitals back** undoes it.
 

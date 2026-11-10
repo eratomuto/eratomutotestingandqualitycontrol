@@ -1292,12 +1292,18 @@ function boot() {
   $('#newBtn').addEventListener('click', newPatient);
   $('#surgeBtn').addEventListener('click', surge);
   $('#resetBtn').addEventListener('click', resetHospitals);
+  // Shortcuts act only on a fresh, deliberate press. A held key (e.repeat) is swallowed, so it can never run
+  // Find and then Send before the doctor has seen the review screen. Nothing here sends or discards on the
+  // receipt screen: "Next patient" is click-only, and Copy and Print stay put until the doctor moves on.
+  const SHORTCUT_ACTION = {v1:findHospital, v2:sendReferral};   // no entry for v3 on purpose
   document.addEventListener('keydown', e => {
-    if (/^F[123]$/.test(e.key) && !e.ctrlKey && !e.metaKey && !e.altKey) { e.preventDefault(); usePreset(+e.key[1] - 1); }
-    else if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {       // ctrl+enter = whatever the big green button says
-      e.preventDefault();
-      ({v1:findHospital, v2:sendReferral, v3:newPatient})[S.view]();
-    }
+    const preset = /^F[123]$/.test(e.key) && !e.ctrlKey && !e.metaKey && !e.altKey;
+    const go = e.key === 'Enter' && (e.ctrlKey || e.metaKey);   // ctrl+enter = whatever the big button says
+    if (!preset && !go) return;
+    e.preventDefault();                                          // also stops a held F1 from reopening browser help
+    if (e.repeat) return;
+    if (preset) usePreset(+e.key[1] - 1);
+    else if (SHORTCUT_ACTION[S.view]) SHORTCUT_ACTION[S.view]();
   });
   document.addEventListener('visibilitychange', () => { if (!document.hidden) checkHealth().then(refreshHospitals); });
 
