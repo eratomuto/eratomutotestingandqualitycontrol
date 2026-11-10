@@ -205,10 +205,12 @@ details.hosp > summary .muted{font-weight:400;font-size:14px;margin-left:6px}
   .hrow{grid-template-columns:1fr auto}
   .hrow .full{grid-column:1/-1;grid-row:2}
 }
+.print-demo{display:none}
 @media print{
   .top,.practice,.cmd,#v1,#v2,.hosp,.foot,.actions{display:none!important}
   body{background:#fff}
   .card{border:1px solid #000}
+  .print-demo{display:block;border:2px solid #000;padding:10px 14px;margin-bottom:14px;font:800 18px var(--sans);text-align:center}
 }
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}
@@ -319,6 +321,7 @@ details.hosp > summary .muted{font-weight:400;font-size:14px;margin-left:6px}
 
   <!-- 3: sent -->
   <section id="v3" aria-label="Referral sent" hidden>
+    <p class="print-demo" id="printDemo"></p>
     <div class="card done">
       <div class="tick" aria-hidden="true">✓</div>
       <h2 id="rcH" tabindex="-1">Referral sent</h2>
@@ -1098,6 +1101,8 @@ async function sendReferral() {
     log(`Referral not sent: ${msg}`, true);
   } finally { S.sending = false; }
 }
+// said on anything that leaves the screen (copied text, printed page); the on-screen footer carries the same warning
+const DEMO_NOTICE = 'DEMO: simulated hospitals, not a real referral';
 function receiptRows(ref) {
   const z = ZIPS[ref.referring_clinic_zip], h = hubById(ref.target_hub_id), near = nearIn(S.nearUsed, ref.referring_clinic_zip);
   const s = h && (h.specialists || []).find(x => x.id === ref.assigned_specialist_id);
@@ -1122,7 +1127,7 @@ function renderReceipt(ref) {
   $('#rcMsg').textContent = '';
 }
 async function copyReceipt() {
-  const text = receiptRows(S.referral).map(([k, v]) => `${k}: ${v}`).join('\n');
+  const text = [DEMO_NOTICE, ...receiptRows(S.referral).map(([k, v]) => `${k}: ${v}`)].join('\n');
   try { await navigator.clipboard.writeText(text); $('#rcMsg').textContent = 'Copied.'; }
   catch { $('#rcMsg').textContent = 'Copy didn\'t work here. Select the text instead.'; }
 }
@@ -1202,6 +1207,7 @@ function boot() {
   $('#zipList').innerHTML = Object.entries(ZIPS).map(([z, v]) => `<option value="${z}">${esc(v[2])}</option>`).join('');
   renderConn();
 
+  $('#printDemo').textContent = DEMO_NOTICE;
   $('#findBtn').addEventListener('click', findHospital);
   $$('.ex').forEach(b => b.addEventListener('click', () => usePreset(+b.dataset.i)));
   $('#town').innerHTML = '<option value="">Choose a town</option>' + Object.entries(ZIPS)
