@@ -115,6 +115,7 @@ kbd{font:600 14px/1 var(--mono);padding:3px 5px;border-radius:3px;background:var
 .fact .s{font-size:14px;color:var(--ink-2)}
 .check{margin-top:16px;padding:14px 18px;border-radius:8px;font-weight:700;background:var(--red-tint);border:2px solid var(--red);color:var(--red-dk)}
 .override{margin-top:12px;display:inline-flex;flex-wrap:wrap;gap:6px 12px;align-items:center;justify-content:center;padding:8px 14px;border-radius:8px;background:var(--red-tint);color:var(--red-dk);font-size:15px;font-weight:700}
+.linkbtn:disabled{color:var(--ink-2);text-decoration:none;cursor:not-allowed}
 .linkbtn{background:none;border:0;padding:0;color:var(--blue);text-decoration:underline;text-underline-offset:3px;font-weight:800;font-size:15px}
 .picker{margin-top:16px;padding:20px}   /* no scroll-margin here: html's scroll-padding-top already clears the bar */
 .picker h3{font-size:20px;font-weight:900}
@@ -122,6 +123,8 @@ kbd{font:600 14px/1 var(--mono);padding:3px 5px;border-radius:3px;background:var
 .picker h4{margin:16px 0 6px;font-size:14px;font-weight:800;color:var(--ink-2);text-transform:uppercase;letter-spacing:.06em}
 .opt{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 14px;align-items:center;width:100%;text-align:left;padding:12px 14px;margin-top:8px;border:2px solid var(--rule);border-radius:8px;background:var(--paper)}
 .opt:hover{border-color:var(--blue)}
+.opt:disabled{opacity:.5;cursor:not-allowed}
+.opt:disabled:not([aria-pressed=true]):hover{border-color:var(--rule)}
 .opt[aria-pressed=true]{border-color:var(--blue);background:var(--blue-tint);box-shadow:inset 0 0 0 1px var(--blue)}
 .opt .on{font-weight:800;line-height:1.25}
 .opt .om{grid-column:1/-1;font-size:14px;color:var(--ink-2)}
@@ -1065,6 +1068,7 @@ function renderPicker() {
     + (no.length ? `<h4>Don't offer ${esc(plainSp(sp))} care</h4>` + no.map(opt).join('') : '');
 }
 function choose(id) {
+  if (S.sending) return;
   S.choice = id === S.plan.best.hub.hub_id ? null : id;
   renderTarget();
   togglePicker(false);
@@ -1078,6 +1082,12 @@ function togglePicker(open = $('#picker').hidden) {
   $('#pickBtn').textContent = open ? 'Close the list' : 'Send somewhere else';
   if (open) { renderPicker(); cmd('STEP 2 OF 3 · PICK A HOSPITAL', `Tap where it should go. ${K('RUSH PICK')} is the suggestion.`); $('#picker').scrollIntoView({behavior: reduced() ? 'auto' : 'smooth', block:'start'}); }
   else if (S.view === 'v2' && S.plan) cmdForView();
+}
+// While a send is in flight nothing on step 2 may change the target or move the doctor away. Disabled buttons
+// look disabled and can't be focused or clicked. The demo buttons count too: they re-pick the suggestion.
+function lockStep2(on) {
+  [$('#backBtn'), $('#pickBtn'), $('#surgeBtn'), $('#resetBtn'), ...$$('#pickList .opt'), ...$$('#useRush')]
+    .forEach(el => { el.disabled = on; });
 }
 function renderMatch() {
   const p = S.patient, r = S.plan, best = r.best;
@@ -1185,7 +1195,7 @@ async function sendReferral() {
     $('#sendErr').hidden = false;
     return;
   }
-  S.sending = true;
+  S.sending = true; lockStep2(true);
   const btn = $('#sendBtn');
   btn.disabled = true; btn.textContent = 'Sending…';
   $('#sendErr').hidden = true;
@@ -1214,7 +1224,7 @@ async function sendReferral() {
     btn.disabled = false; btn.textContent = 'Send referral →';
     cmd('STEP 2 OF 3', m.bar, 'bad');
     log(`Referral not sent: ${detailOf(e)}`, true);
-  } finally { stopSlowTimer(); S.sending = false; }
+  } finally { stopSlowTimer(); S.sending = false; lockStep2(false); }
 }
 // the one demo warning: shown in the footer, and on anything that leaves the screen (copied text, printed page)
 const DEMO_NOTICE = 'DEMO: simulated hospitals, not a real referral. Don\'t use it for real clinical decisions.';
@@ -1261,6 +1271,7 @@ function newPatient() {
   show('v1', $('#notes'));
 }
 function backToNotes() {
+  if (S.sending) return;
   S.patient = null; S.plan = null; S.choice = null;
   renderHospitals();
   show('v1', $('#notes'));
@@ -1278,7 +1289,7 @@ function rematch() {                     // on the review screen, re-pick live s
   return plan.best.hub.hub_id !== before ? ` ${what} changed to ${plan.best.hub.name}.` : ` ${what} didn't change.`;
 }
 async function surge() {
-  if (!S.hubs.length) return;
+  if (!S.hubs.length || S.sending) return;
   const btn = $('#surgeBtn');
   const pool = S.hubs.filter(h => !S.surged.has(h.hub_id));
   const list = pool.length ? pool : S.hubs;
@@ -1300,9 +1311,10 @@ async function surge() {
     log(`Demo: made ${h.name} very busy.`);
   } catch (e) {
     log(`Couldn't make ${h.name} busy: ${e.message}`, true);
-  } finally { btn.disabled = false; }
+  } finally { btn.disabled = S.sending; }
 }
 async function resetHospitals() {
+  if (S.sending) return;
   const ids = [...S.surged];
   $('#resetBtn').disabled = true;
   try {
@@ -1318,7 +1330,7 @@ async function resetHospitals() {
     log('Demo: put hospitals back to normal.');
   } catch (e) {
     log(`Couldn't reset hospitals: ${e.message}`, true);
-  } finally { $('#resetBtn').disabled = false; }
+  } finally { $('#resetBtn').disabled = S.sending; }
 }
 
 /* ================= wiring ================= */
@@ -1353,7 +1365,7 @@ function boot() {
   $('#more').addEventListener('toggle', () => { if ($('#more').open && S.plan) drawMap(target().hub, true); });
   $('#sendBtn').addEventListener('click', sendReferral);
   $('#backBtn').addEventListener('click', backToNotes);
-  $('#pickBtn').addEventListener('click', () => togglePicker());
+  $('#pickBtn').addEventListener('click', () => { if (!S.sending) togglePicker(); });
   $('#pickList').addEventListener('click', e => { const b = e.target.closest('.opt'); if (b) choose(b.dataset.id); });
   $('#overrideNote').addEventListener('click', e => { if (e.target.id === 'useRush') choose(S.plan.best.hub.hub_id); });
   $('#copyBtn').addEventListener('click', copyReceipt);
@@ -1370,7 +1382,7 @@ function boot() {
     const go = e.key === 'Enter' && (e.ctrlKey || e.metaKey);   // ctrl+enter = whatever the big button says
     if (!preset && !go) return;
     e.preventDefault();                                          // also stops a held F1 from reopening browser help
-    if (e.repeat || performance.now() - S.shownAt < SHORTCUT_COOLDOWN_MS) return;
+    if (S.sending || e.repeat || performance.now() - S.shownAt < SHORTCUT_COOLDOWN_MS) return;
     if (preset) usePreset(+e.key[1] - 1);
     else if (SHORTCUT_ACTION[S.view]) SHORTCUT_ACTION[S.view]();
   });
