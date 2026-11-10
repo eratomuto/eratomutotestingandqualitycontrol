@@ -980,6 +980,9 @@ function triageSource(p) {
   const mocked = (p.key_symptoms || []).some(s => /^mock/.test(s)) || (p.acute_risks || []).includes('mock_risk');
   if (S.online === false) return {mocked:false, check:true, msg:'Practice mode guessed the urgency from keywords. Make sure it\'s right before you send.'};
   if (mocked) return {mocked:true, check:true, msg:`${S.aiLive ? 'The AI couldn\'t read these notes' : 'No AI key is set up'}, so the urgency is a keyword guess. Make sure it's right before you send.`};
+  // an AI-style result that picked out nothing medical (no symptom, risk or medication): same slot, same rules
+  const none = a => !a || !a.length;
+  if (none(p.key_symptoms) && none(p.acute_risks) && none(p.current_medications)) return {mocked:false, check:true, msg:'Nothing medical was picked out of these notes. Make sure the urgency is right.'};
   return {mocked:false, check:false, msg:''};
 }
 // The reasoning only. The figures (percent full, specialists free, wait, drive) are not repeated here: they live
