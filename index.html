@@ -474,16 +474,33 @@ const proj = (lat, lon) => [(lon - MAPV.lon0) * MAPV.kx, (MAPV.lat1 - lat) * MAP
 const store = {        // localStorage can throw (privacy modes, sandboxed previews); the page must still work
   get(k) { try { return localStorage.getItem(k); } catch { return null; } },
   set(k, v) { try { localStorage.setItem(k, v); } catch {} },
+  remove(k) { try { localStorage.removeItem(k); } catch {} },
 };
-const qsApi = new URLSearchParams(location.search).get('api');   // run.py passes ?api=<backend url>
-if (qsApi && /^https?:\/\/[^\s]+$/i.test(qsApi)) {
-  store.set('rp.base', qsApi.replace(/\/+$/, ''));
-  try { history.replaceState(null, '', location.pathname + location.hash); } catch {}
+// Clinical notes are sent to the API address, so an address is only used if it is this page's own origin or a
+// loopback address (any port, http or https). This applies to ?api= and to the value saved in rp.base.
+// Returns the cleaned address (no trailing slash, no credentials, query or hash), or null if it isn't trusted.
+const LOOPBACK = /^(localhost|127\.0\.0\.1|\[::1\])$/;
+function trustedApi(v) {
+  try {
+    const u = new URL(String(v || '').trim());
+    if (!/^https?:$/.test(u.protocol)) return null;
+    return LOOPBACK.test(u.hostname) || u.origin === location.origin ? u.origin + u.pathname.replace(/\/+$/, '') : null;
+  } catch { return null; }
 }
+const apiParam = new URLSearchParams(location.search).get('api');   // run.py passes ?api=http://localhost:<port>
+const qsApi = trustedApi(apiParam);
+if (qsApi) store.set('rp.base', qsApi);
+if (apiParam !== null) { try { history.replaceState(null, '', location.pathname + location.hash); } catch {} }
+const storedApi = (() => {                       // a saved address that fails the check is dropped
+  const v = store.get('rp.base');
+  const t = v === null ? null : trustedApi(v);
+  if (v !== null && !t) store.remove('rp.base');
+  return t;
+})();
 const S = {
   // hosted (e.g. on Render) the API lives on the same site as this page; locally it's on :8000
-  base: qsApi || (/^https?:$/.test(location.protocol) && !/^(localhost|127\.0\.0\.1|\[::1\])$/.test(location.hostname) && !/github\.io$/.test(location.hostname)
-    ? location.origin : store.get('rp.base') || 'http://localhost:8000'),
+  base: qsApi || (/^https?:$/.test(location.protocol) && !LOOPBACK.test(location.hostname) && !/github\.io$/.test(location.hostname)
+    ? location.origin : storedApi || 'http://localhost:8000'),
   online: null, aiLive: null,
   hubs: [], sig: {}, baseline: {},
   surged: new Set(), mock: null, provErr: false,
