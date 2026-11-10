@@ -405,9 +405,10 @@ const ZIPS = {
   'E2L 4L2': [45.3040, -66.0870, 'Saint John NB'],
 };
 const TOWN = {HAL_QEII:['Halifax','r'], TRU_COLCH:['Truro','r'], CB_REG:['Sydney','l'], VALLEY_REG:['Kentville','l'], SW_REG:['Bridgewater','l']};
-const townOf = h => (TOWN[h.hub_id] || [])[0] || (ZIPS[h.postal_code] || [])[2] || '';
-// What the nearest-town picker and the "near <town>" wording call each place. ZIPS is frozen, so names that read
-// badly in a sentence get a label here; every other place falls back to its ZIPS name.
+const townOf = h => (TOWN[h.hub_id] || [])[0] || townLabel(h.postal_code);   // townLabel is defined just below
+// The one name for each place, used everywhere a town name from ZIPS is shown (postal help line, receipt, copy text,
+// map, picker, datalist, "near <town>"). ZIPS is frozen, so names that read badly get a label here; every other
+// place falls back to its ZIPS name. Never read ZIPS[...][2] directly for display.
 const TOWN_LABEL = {'B1S 1A1': 'East Cape Breton', 'E2L 4L2': 'Saint John, NB'};
 const townLabel = zip => TOWN_LABEL[zip] || (ZIPS[zip] || [])[2] || '';
 const PLAIN = {'Cardiology':'heart', 'Neurology':'brain and nerve', 'Orthopedics':'bone and joint', 'Oncology':'cancer',
@@ -842,7 +843,7 @@ function updateZipHelp(settled = true) {
   $('#zipErr').hidden = true; $('#zip').removeAttribute('aria-invalid');
   if (bad === 'empty') el.textContent = 'Where the patient is now.';
   else if (near) el.textContent = `Near ${near}. Distances will be approximate.`;
-  else if (!bad) el.textContent = `${ZIPS[zip][2]} ✓`;
+  else if (!bad) el.textContent = `${townLabel(zip)} ✓`;
   else if (typing && bad !== 'letter') el.textContent = 'Postal codes look like B1P 5E7.';   // no nagging mid-typing
   else { el.textContent = ZIP_HELP[bad]; el.classList.add('warn'); }
   $('#townWrap').hidden = bad === 'empty' || typing || (!bad && !near);   // picker shows for a settled code RUSH can't use as typed
@@ -1267,14 +1268,14 @@ const DEMO_NOTICE = 'DEMO: simulated hospitals, not a real referral. Don\'t use 
 // receipt headline when the server never got the referral (practice mode)
 const PRACTICE_HEAD = 'Practice referral (nothing was sent)';
 function receiptRows(ref) {
-  const z = ZIPS[ref.referring_clinic_zip], h = hubById(ref.target_hub_id), near = nearIn(S.nearUsed, ref.referring_clinic_zip);
+  const h = hubById(ref.target_hub_id), near = nearIn(S.nearUsed, ref.referring_clinic_zip);
   const s = h && (h.specialists || []).find(x => x.id === ref.assigned_specialist_id);
   const when = fullFmt.format(new Date(ref.created_at || Date.now()));
   const wait = `${plural(ref.estimated_wait_days, 'day')}, around ${inDays(ref.estimated_wait_days)}`;
   return [
     ['Referral #', ref.referral_id],
     ['From', near ? (S.nearUsed.typed ? `${S.nearUsed.typed} (clinic's own code), near ${near}` : `Near ${near}`)
-      : `${ref.referring_clinic_zip}${z ? `, ${z[2]}` : ''}`],
+      : `${ref.referring_clinic_zip}${townLabel(ref.referring_clinic_zip) ? `, ${townLabel(ref.referring_clinic_zip)}` : ''}`],
     ['To', ref.target_hub_name],
     ...(ref.manual_override ? [['Chosen by', `You (RUSH suggested ${ref.suggested_hub_name})`]] : []),
     ['Specialist', s ? s.name : 'Waiting list'],
@@ -1377,7 +1378,7 @@ function boot() {
   const syncBarHeight = () => document.documentElement.style.setProperty('--cmd-h', `${Math.ceil(bar.getBoundingClientRect().height)}px`);
   syncBarHeight();
   if ('ResizeObserver' in window) new ResizeObserver(syncBarHeight).observe(bar);
-  $('#zipList').innerHTML = Object.entries(ZIPS).map(([z, v]) => `<option value="${z}">${esc(v[2])}</option>`).join('');
+  $('#zipList').innerHTML = Object.keys(ZIPS).map(z => `<option value="${z}">${esc(townLabel(z))}</option>`).join('');
   renderConn();
 
   $('#printDemo').textContent = DEMO_NOTICE;
