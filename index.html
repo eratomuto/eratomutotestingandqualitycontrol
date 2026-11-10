@@ -1172,7 +1172,7 @@ function receiptRows(ref) {
     ['Urgency', `${ref.urgency_score}/10, ${specLabel(ref.required_specialty)}`],
     ['Distance', `${Number(ref.distance_km).toFixed(0)} km${near ? ', approximate' : ''}`],
     ['Expected wait', wait],
-    ['Sent', when],
+    [S.practiceReceipt ? 'Practice run' : 'Sent', when],
   ];
 }
 function renderReceipt(ref) {
