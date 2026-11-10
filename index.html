@@ -322,7 +322,7 @@ details.hosp > summary .muted{font-weight:400;font-size:14px;margin-left:6px}
           <svg id="mapSvg" viewBox="0 0 493 380" role="img" aria-labelledby="mapCap"></svg>
           <figcaption id="mapCap"></figcaption>
         </figure>
-        <div class="tbl" tabindex="0" role="region" aria-label="Hospital scores"><table>
+        <div class="tbl"><table>
           <thead><tr><th>Hospital</th><th class="r" id="thDist">Distance</th><th>How full</th><th>Specialist free?</th><th class="r">Score</th></tr></thead>
           <tbody id="scoreRows"></tbody>
         </table></div>
@@ -1107,6 +1107,16 @@ function lockStep2(on) {
   [$('#backBtn'), $('#pickBtn'), $('#surgeBtn'), $('#resetBtn'), ...$$('#pickList .opt'), ...$$('#useRush')]
     .forEach(el => { el.disabled = on; });
 }
+// The score table is a keyboard tab stop only while it actually scrolls sideways (a closed drawer or a table
+// that fits has nothing to scroll, so it stays out of the tab order). Re-checked on resize and when rows change.
+function syncTblFocusable() {
+  const t = $('.tbl');
+  if (t.scrollWidth > t.clientWidth) {
+    t.tabIndex = 0; t.setAttribute('role', 'region'); t.setAttribute('aria-label', 'Hospital scores');
+  } else {
+    t.removeAttribute('tabindex'); t.removeAttribute('role'); t.removeAttribute('aria-label');
+  }
+}
 function renderMatch() {
   const p = S.patient, r = S.plan, best = r.best;
   const src = triageSource(p);
@@ -1130,6 +1140,7 @@ function renderMatch() {
       <td>${x.eligible ? (x.n ? `Yes, ${x.n}` : 'No') : `No ${esc(plainSp(p.primary_specialty_required))} care`}</td>
       <td class="r num">${x.eligible ? Math.round(x.score * 100) : '–'}</td></tr>`;
   }).join('');
+  syncTblFocusable();
   const w = WEIGHTS[r.tier];
   $('#scoreNote').textContent = `Score out of 100. At this urgency: specialist free ${w.specialist * 100}%, how full ${w.capacity * 100}%, distance ${w.distance * 100}%.`;
 
@@ -1379,7 +1390,13 @@ function boot() {
     $$('.ex').forEach(b => b.setAttribute('aria-pressed', 'false'));
     if (!$('#notesErr').hidden) { $('#notesErr').hidden = true; $('#notes').removeAttribute('aria-invalid'); cmdForView(); }
   });
-  $('#more').addEventListener('toggle', () => { if ($('#more').open && S.plan) drawMap(target().hub, true); });
+  $('#more').addEventListener('toggle', () => { if ($('#more').open && S.plan) drawMap(target().hub, true); syncTblFocusable(); });
+  // re-check whether the score table scrolls sideways whenever its box or its content changes size
+  const tbl = $('.tbl');
+  if ('ResizeObserver' in window) { const ro = new ResizeObserver(syncTblFocusable); ro.observe(tbl); ro.observe(tbl.firstElementChild); }
+  window.addEventListener('resize', syncTblFocusable);
+  // keyboard focus: put the table's top edge just below the command bar (html's scroll-padding-top = bar + gap)
+  tbl.addEventListener('focus', () => { if (tbl.matches(':focus-visible')) tbl.scrollIntoView({block:'start', inline:'nearest', behavior:'auto'}); });
   $('#sendBtn').addEventListener('click', sendReferral);
   $('#backBtn').addEventListener('click', backToNotes);
   $('#pickBtn').addEventListener('click', () => { if (!S.sending) togglePicker(); });
