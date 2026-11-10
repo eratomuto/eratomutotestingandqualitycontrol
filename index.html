@@ -5,9 +5,6 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>RUSH: Referral Upkeep System for Healthcare</title>
 <link rel="icon" href="SH.png">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Overpass:wght@400;600;800;900&display=swap" rel="stylesheet">
 <style>
 :root{
   --paper:#fff; --band:#f1f3f7; --ink:#0d0f14; --ink-2:#4a5160; --rule:#d5d9e2;
@@ -16,7 +13,8 @@
   --slate:#5b6478;
   --cmd-h:120px;      /* the sticky command bar's real height; script keeps this current (ResizeObserver) */
   --cmd-gap:12px;     /* room under the bar so a focused element's ring and the bar's shadow don't overlap it */
-  --sans:"Overpass","Helvetica Neue",Arial,sans-serif; --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --sans:system-ui,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;   /* system fonts only: the page makes no third-party requests */
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
 }
 *,*::before,*::after{box-sizing:border-box}
 body{margin:0;background:var(--band);color:var(--ink);font:400 18px/1.5 var(--sans);-webkit-font-smoothing:antialiased}
