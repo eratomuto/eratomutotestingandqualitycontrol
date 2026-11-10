@@ -77,6 +77,7 @@ main.wrap{padding-top:28px;padding-bottom:60px}
 .input[aria-invalid=true]{border-color:var(--red)}
 textarea.input{resize:vertical;min-height:150px}
 #zip{max-width:220px;text-transform:uppercase;font-family:var(--mono)}
+#town{max-width:320px}
 .help{font-size:14px;color:var(--ink-2)}
 .help.warn{color:var(--red-dk)}
 .err{font-size:15px;color:var(--red);font-weight:700}
@@ -257,6 +258,11 @@ details.hosp > summary .muted{font-weight:400;font-size:14px;margin-left:6px}
         <datalist id="zipList"></datalist>
         <span class="help" id="zipHelp">Where the patient is now.</span>
         <span class="err" id="zipErr" hidden></span>
+      </div>
+      <div class="field" id="townWrap" hidden>
+        <label for="town">Nearest town</label>
+        <select id="town" class="input"></select>
+        <span class="help">Pick the closest one. Distances will be approximate.</span>
       </div>
       <button class="btn-huge" id="findBtn" type="button">Find hospital →</button>
       <p class="kbd-tip"><kbd>Ctrl</kbd> + <kbd>Enter</kbd> works too</p>
@@ -448,7 +454,10 @@ const S = {
   surged: new Set(), mock: null, provErr: false,
   patient: null, plan: null, choice: null, referral: null,
   running: false,
+  near: null,      // {zip, town}: the code came from the Nearest town picker, not from the clinic
+  nearUsed: null,  // copy of near taken when Find is pressed, so later edits can't relabel this patient
 };
+const nearIn = (n, zip) => (n && n.zip === zip ? n.town : '');   // town name if this code was picked, else ''
 
 /* ================= routing (mirrors app/services/routing_engine.py) ================= */
 function geodesicKm(lat1, lon1, lat2, lon2) {          // vincenty inverse on WGS-84, same as geopy within mm
@@ -725,14 +734,44 @@ function normZip(v) {
   const s = String(v || '').toUpperCase().replace(/\s+/g, '');
   return s.length === 6 ? `${s.slice(0, 3)} ${s.slice(3)}` : String(v || '').trim().toUpperCase();
 }
+// What is wrong with this (already normalised) code: '' = nothing, it is in ZIPS and can be sent.
+//   'empty' | 'letter' (O or I where a digit goes) | 'format' | 'unknown' (well-formed, not in ZIPS)
+function zipProblem(zip) {
+  if (!zip) return 'empty';
+  if (ZIPS[zip]) return '';
+  const s = zip.replace(/\s+/g, '');
+  if (s.length === 6 && [1, 3, 5].some(i => /[OI]/.test(s[i]))) return 'letter';   // pattern is A9A 9A9
+  return /^[A-Z]\d[A-Z] \d[A-Z]\d$/.test(zip) ? 'unknown' : 'format';
+}
+const ZIP_HELP = {
+  letter:  'That has a letter O or I where a number goes. Did you mean 0 / 1?',
+  format:  'Postal codes look like B1P 5E7. Or pick the nearest town.',
+  unknown: 'RUSH doesn\'t know this postal code. Pick the nearest town.',
+};
+const ZIP_BAR = {
+  letter:  `Fix the postal code, then hit ${K('FIND HOSPITAL')}.`,
+  format:  `Fix the postal code or ${K('PICK THE NEAREST TOWN')}, then hit FIND HOSPITAL.`,
+  unknown: `${K('PICK THE NEAREST TOWN')}, then hit FIND HOSPITAL.`,
+};
 function updateZipHelp() {
-  const zip = normZip($('#zip').value), el = $('#zipHelp');
+  const zip = normZip($('#zip').value), el = $('#zipHelp'), bad = zipProblem(zip), near = nearIn(S.near, zip);
   el.classList.remove('warn');
   $('#zipErr').hidden = true; $('#zip').removeAttribute('aria-invalid');
-  if (!zip) el.textContent = 'Where the patient is now.';
-  else if (ZIPS[zip]) el.textContent = `${ZIPS[zip][2]} ✓`;
-  else if (!/^[A-Z]\d[A-Z] \d[A-Z]\d$/.test(zip)) { el.textContent = 'Postal codes look like B1P 5E7.'; el.classList.add('warn'); }
-  else { el.textContent = 'Unknown town, so distances will be a guess (100 km).'; el.classList.add('warn'); }
+  if (bad === 'empty') el.textContent = 'Where the patient is now.';
+  else if (near) el.textContent = `Near ${near}. Distances will be approximate.`;
+  else if (!bad) el.textContent = `${ZIPS[zip][2]} ✓`;
+  else { el.textContent = ZIP_HELP[bad]; el.classList.add('warn'); }
+  $('#townWrap').hidden = bad === 'empty' || (!bad && !near);   // picker shows for any code RUSH can't use as typed
+  $('#town').value = near ? zip : '';
+}
+function pickTown() {
+  const z = $('#town').value;
+  if (ZIPS[z]) {
+    $('#zip').value = z;                       // the town's known code goes into the postal field
+    S.near = {zip:z, town:ZIPS[z][2]};
+  }
+  updateZipHelp();
+  if (!S.running) cmdForView();                // clears any red "pick a town" message in the bar
 }
 function fieldErr(id, msg, bar) {
   const input = $(`#${id}`), err = $(`#${id}Err`);
@@ -745,7 +784,7 @@ function usePreset(i) {
   if (S.running || S.view !== 'v1') return;
   const p = PRESETS[i];
   $('#notes').value = p.notes;
-  $('#zip').value = p.zip;
+  $('#zip').value = p.zip; S.near = null;
   $$('.ex').forEach((b, j) => b.setAttribute('aria-pressed', String(j === i)));
   $('#notesErr').hidden = true; $('#notes').removeAttribute('aria-invalid');
   updateZipHelp();
@@ -758,8 +797,16 @@ async function findHospital() {
   if (!notes) return fieldErr('notes', 'Paste the doctor\'s notes here.', `You skipped the notes. ${K('PASTE THEM')} first.`);
   if (!zip) return fieldErr('zip', 'Type a postal code, like B1P 5E7.', `No postal code. ${K('TYPE IT IN')}, then hit FIND HOSPITAL.`);
   $('#zip').value = zip;
+  const bad = zipProblem(zip);
+  if (bad) {                                   // only codes in ZIPS go on to matching and Send
+    updateZipHelp();                           // shows the one reason, and the town picker
+    $('#zip').setAttribute('aria-invalid', 'true');
+    (bad === 'unknown' ? $('#town') : $('#zip')).focus();
+    return cmd('STEP 1 OF 3', ZIP_BAR[bad], 'bad');
+  }
 
   S.running = true; S.referral = null; S.choice = null;
+  S.nearUsed = nearIn(S.near, zip) ? S.near : null;
   const btn = $('#findBtn');
   btn.disabled = true; btn.textContent = 'Reading the notes…';
   $('#findErr').hidden = true;
@@ -853,7 +900,9 @@ function renderTarget() {
   if (t.mine) on.innerHTML = `${t.offers ? '' : `⚠ Doesn't list ${esc(plainSp(p.primary_specialty_required))} care. `}RUSH suggested ${esc(r.best.hub.name)}. <button class="linkbtn" type="button" id="useRush">Use RUSH's pick</button>`;
   const known = !!ZIPS[p.home_clinic_zip];
   $('#fDist').textContent = `${t.dist.toFixed(0)} km`;
-  $('#fDistS').textContent = known ? driveText(t.dist) : 'distance is a guess';
+  const near = nearIn(S.nearUsed, p.home_clinic_zip);   // set when the code came from the Nearest town picker
+  $('#fDistS').textContent = !known ? 'distance is a guess'
+    : driveText(t.dist) + (near ? (t.dist < 1 ? ` (near ${near})` : `, from near ${near}`) : '');
   $('#fWait').textContent = plural(t.wait, 'day');
   $('#fWaitS').textContent = `around ${inDays(t.wait)}`;
   $('#fNeed').textContent = p.primary_specialty_required;
@@ -957,7 +1006,7 @@ function drawMap(pick, animate) {
   const pll = pick.latitude != null ? [pick.latitude, pick.longitude] : ZIPS[pick.postal_code];
   const [bx, by] = pll ? proj(pll[0], pll[1]) : [0, 0];
 
-  const z = ZIPS[p.home_clinic_zip], coordsFound = !!z;
+  const z = ZIPS[p.home_clinic_zip], coordsFound = !!z, nearTown = nearIn(S.nearUsed, p.home_clinic_zip);
   let [cx, cy] = z ? proj(z[0], z[1]) : [0, 0];
 
   if (coordsFound) {
@@ -989,14 +1038,15 @@ function drawMap(pick, animate) {
   let clinic = '';
   if (coordsFound) {
     clinic = `<g class="m-clinic"><circle cx="${cx}" cy="${cy}" r="7"/></g>
-      <text class="m-town" x="${cx}" y="${cy - 12}" text-anchor="middle">Clinic</text>`;
+      <text class="m-town" x="${cx}" y="${cy - 12}" text-anchor="middle">${nearTown ? 'Clinic (approx.)' : 'Clinic'}</text>`;
   }
   svg.innerHTML = MAP_BASE + route + hosp + clinic;
   const grey = `Grey hospitals don't offer ${plainSp(sp)} care.`;
   $('#mapCap').textContent = coordsFound
     ? (hubDistance(pick, p.home_clinic_zip) < 1
-      ? `The clinic and ${pick.name} are both in ${townOf(pick)}, so there's no drive. ${grey}`
-      : `Route from the clinic to ${pick.name} in ${townOf(pick)}. ${grey}`)
+      ? (nearTown ? `The clinic is near ${nearTown}, close to ${pick.name}, so there's no drive. ${grey}`
+              : `The clinic and ${pick.name} are both in ${townOf(pick)}, so there's no drive. ${grey}`)
+      : `Route from ${nearTown ? `near ${nearTown}` : 'the clinic'} to ${pick.name} in ${townOf(pick)}. ${nearTown ? 'The start point is approximate. ' : ''}${grey}`)
     : `RUSH doesn't know where postal code ${p.home_clinic_zip} is, so no route is drawn.`;
   const road = $('#road');
   if (road && animate && !reduced()) {
@@ -1015,6 +1065,11 @@ function drawMap(pick, animate) {
 /* ================= step 3 ================= */
 async function sendReferral() {
   if (!S.patient || S.referral || S.sending) return;
+  if (!ZIPS[S.patient.home_clinic_zip]) {      // can't happen from step 1, but an unknown code must never go out
+    $('#sendErr').innerHTML = '<b>Not sent.</b>RUSH doesn\'t know this postal code. Go back and pick the nearest town.';
+    $('#sendErr').hidden = false;
+    return;
+  }
   S.sending = true;
   const btn = $('#sendBtn');
   btn.disabled = true; btn.textContent = 'Sending…';
@@ -1041,18 +1096,18 @@ async function sendReferral() {
   } finally { S.sending = false; }
 }
 function receiptRows(ref) {
-  const z = ZIPS[ref.referring_clinic_zip], h = hubById(ref.target_hub_id);
+  const z = ZIPS[ref.referring_clinic_zip], h = hubById(ref.target_hub_id), near = nearIn(S.nearUsed, ref.referring_clinic_zip);
   const s = h && (h.specialists || []).find(x => x.id === ref.assigned_specialist_id);
   const when = fullFmt.format(new Date(ref.created_at || Date.now()));
   const wait = `${plural(ref.estimated_wait_days, 'day')}, around ${inDays(ref.estimated_wait_days)}`;
   return [
     ['Referral #', ref.referral_id],
-    ['From', `${ref.referring_clinic_zip}${z ? `, ${z[2]}` : ''}`],
+    ['From', near ? `Near ${near} (clinic's own postal code not in RUSH)` : `${ref.referring_clinic_zip}${z ? `, ${z[2]}` : ''}`],
     ['To', ref.target_hub_name],
     ...(ref.manual_override ? [['Chosen by', `You (RUSH suggested ${ref.suggested_hub_name})`]] : []),
     ['Specialist', s ? s.name : 'Waiting list'],
     ['Urgency', `${ref.urgency_score}/10, ${specLabel(ref.required_specialty)}`],
-    ['Distance', `${Number(ref.distance_km).toFixed(0)} km`],
+    ['Distance', `${Number(ref.distance_km).toFixed(0)} km${near ? ', approximate' : ''}`],
     ['Expected wait', wait],
     ['Sent', when],
   ];
@@ -1070,6 +1125,7 @@ async function copyReceipt() {
 }
 function newPatient() {
   S.patient = null; S.plan = null; S.choice = null; S.referral = null;
+  S.near = null; S.nearUsed = null;
   $('#notes').value = ''; $('#zip').value = ''; updateZipHelp();
   $$('.ex').forEach(b => b.setAttribute('aria-pressed', 'false'));
   $('#findErr').hidden = true;
@@ -1145,7 +1201,10 @@ function boot() {
 
   $('#findBtn').addEventListener('click', findHospital);
   $$('.ex').forEach(b => b.addEventListener('click', () => usePreset(+b.dataset.i)));
-  $('#zip').addEventListener('input', updateZipHelp);
+  $('#town').innerHTML = '<option value="">Choose a town</option>' + Object.entries(ZIPS)
+    .sort((a, b) => a[1][2].localeCompare(b[1][2])).map(([z, v]) => `<option value="${z}">${esc(v[2])}</option>`).join('');
+  $('#town').addEventListener('change', pickTown);
+  $('#zip').addEventListener('input', () => { S.near = null; updateZipHelp(); });   // typing by hand means an exact code
   $('#zip').addEventListener('blur', () => { const v = normZip($('#zip').value); if (v) $('#zip').value = v; updateZipHelp(); });
   $('#notes').addEventListener('input', () => {
     $$('.ex').forEach(b => b.setAttribute('aria-pressed', 'false'));
