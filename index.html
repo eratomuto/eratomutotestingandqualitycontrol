@@ -763,27 +763,28 @@ async function loop() {
 }
 
 /* ================= plain-language errors ================= */
-// Each cause gets its own message: what happened, then what to do. Technical detail goes to the console only.
+// Each cause gets its own message. Two roles, never the same sentence in both: the box (or field message) says
+// what happened; the command bar says what to do next. Technical detail goes to the console only.
 const isGateway = e => e instanceof HttpError && [502, 503, 504].includes(e.status);   // a host answered, the app behind it didn't
 const detailOf = e => e instanceof HttpError ? `${e.status} ${e.message}` : (e && e.message) || String(e);
 const MIN_NOTE_WORDS = 2;
 function findMessage(e) {
   if (e instanceof RushError && e.kind === 'unreadable') return {
-    what: 'Couldn\'t tell the urgency from these notes.',
-    fix: 'Add the symptoms and how long they\'ve lasted. Then hit FIND HOSPITAL.',
-    bar: `Notes unclear. ${K('ADD DETAIL')}, then hit FIND HOSPITAL.`};
+    what: 'RUSH couldn\'t tell the urgency from these notes.',
+    fix: 'They may be too thin or unclear.',
+    bar: `${K('ADD THE SYMPTOMS AND HOW LONG')}, then hit FIND HOSPITAL.`};
   if (e instanceof RushError && e.kind === 'nospecialty') return {
     what: `No hospital in RUSH offers ${plainSp(e.specialty)} care.`,
-    fix: 'Arrange this referral by phone.',
-    bar: `No match in RUSH. ${K('ARRANGE IT BY PHONE')}.`};
+    fix: 'There is nothing to retry here.',
+    bar: `${K('ARRANGE IT BY PHONE')}.`};
   if (e instanceof Unreachable || isGateway(e)) return {
     what: 'Can\'t reach the server.',
-    fix: 'Check that RUSH is running. Your notes are still here. Then hit FIND HOSPITAL.',
-    bar: `Can't reach the server. Check it, then hit ${K('FIND HOSPITAL')} again.`};
+    fix: 'Your notes are still here.',
+    bar: `${K('CHECK THAT RUSH IS RUNNING')}, then hit FIND HOSPITAL.`};
   return {
     what: 'RUSH hit a problem.',
-    fix: 'Hit FIND HOSPITAL to try again. If it keeps happening, phone the hospital.',
-    bar: `That didn't work. Hit ${K('FIND HOSPITAL')} again.`};
+    fix: 'It couldn\'t finish matching this patient.',
+    bar: `Hit ${K('FIND HOSPITAL')} again. If it keeps happening, phone the hospital.`};
 }
 // Send failures: the box (above the Send button) says what happened; the command bar names the cause in a few
 // words and says what to do next.
@@ -818,8 +819,8 @@ function zipProblem(zip) {
 }
 const ZIP_HELP = {
   letter:  'That has a letter O or I where a number goes. Did you mean 0 / 1?',
-  format:  'Postal codes look like B1P 5E7. Or pick the nearest town.',
-  unknown: 'RUSH doesn\'t know this postal code. Pick the nearest town.',
+  format:  'Postal codes look like B1P 5E7.',
+  unknown: 'RUSH doesn\'t know this postal code.',
 };
 const ZIP_BAR = {
   letter:  `Fix the postal code, then hit ${K('FIND HOSPITAL')}.`,
@@ -898,9 +899,9 @@ function cancelFind() {
 async function findHospital() {
   if (S.running) return;
   const notes = $('#notes').value.trim(), zip = normZip($('#zip').value);
-  if (!notes) return fieldErr('notes', 'Paste the doctor\'s notes here.', `You skipped the notes. ${K('PASTE THEM')} first.`);
-  if (notes.split(/\s+/).length < MIN_NOTE_WORDS) return fieldErr('notes', 'The notes are too short to read. Add the symptoms and how long they\'ve lasted.', `Notes too short. ${K('ADD DETAIL')}, then hit FIND HOSPITAL.`);
-  if (!zip) return fieldErr('zip', 'Type a postal code, like B1P 5E7.', `No postal code. ${K('TYPE IT IN')}, then hit FIND HOSPITAL.`);
+  if (!notes) return fieldErr('notes', 'The notes are empty.', `${K('PASTE THE NOTES')}, then hit FIND HOSPITAL.`);
+  if (notes.split(/\s+/).length < MIN_NOTE_WORDS) return fieldErr('notes', 'The notes are too short to read.', `${K('ADD THE SYMPTOMS AND HOW LONG')}, then hit FIND HOSPITAL.`);
+  if (!zip) return fieldErr('zip', 'There is no postal code. It looks like B1P 5E7.', `${K('TYPE THE POSTAL CODE')}, then hit FIND HOSPITAL.`);
   $('#zip').value = zip;
   const bad = zipProblem(zip);
   if (bad) {                                   // only codes in ZIPS go on to matching and Send
@@ -1016,9 +1017,13 @@ function renderTarget() {
   $('#toLabel').textContent = t.mine ? 'Your pick: send this patient to' : 'Send this patient to';
   $('#hospName').textContent = hub.name;
   $('#hospSub').textContent = `${townOf(hub) ? townOf(hub) + ' · ' : ''}${t.specialist ? `${t.specialist.name} can take them` : 'joins the waiting list'} · ${Math.round(loadPct(hub))}% full (${b.word.toLowerCase()})`;
-  const on = $('#overrideNote');
-  on.hidden = !t.mine;
-  if (t.mine) on.innerHTML = `${t.offers ? '' : `⚠ Doesn't list ${esc(plainSp(p.primary_specialty_required))} care. `}RUSH suggested ${esc(r.best.hub.name)}. <button class="linkbtn" type="button" id="useRush">Use RUSH's pick</button>`;
+  // One warning banner at a time, in priority order: the practice-mode / keyword-guess warning (#checkNote), then
+  // this override note. While the guess warning shows, the override is still visible in the heading ("Your pick"),
+  // the command bar and the picker.
+  const on = $('#overrideNote'), showOverride = t.mine && !triageSource(p).check;
+  on.hidden = !showOverride;
+  on.innerHTML = '';
+  if (showOverride) on.innerHTML = `${t.offers ? '' : `⚠ Doesn't list ${esc(plainSp(p.primary_specialty_required))} care. `}RUSH suggested ${esc(r.best.hub.name)}. <button class="linkbtn" type="button" id="useRush">Use RUSH's pick</button>`;
   const known = !!ZIPS[p.home_clinic_zip];
   $('#fDist').textContent = `${t.dist.toFixed(0)} km`;
   const near = nearIn(S.nearUsed, p.home_clinic_zip);   // set when the code came from the Nearest town picker
