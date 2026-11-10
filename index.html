@@ -49,9 +49,10 @@ code{font-family:var(--mono);font-size:max(14px,.9em);background:rgba(0,0,0,.07)
 
 /* the command bar: tells you exactly what to do */
 .cmd{position:sticky;top:0;z-index:10;background:var(--ink);color:#fff;box-shadow:0 4px 0 var(--red)}
-.cmd .wrap{padding-top:18px;padding-bottom:20px}
-.cmd-step{display:inline-block;font-size:14px;font-weight:900;letter-spacing:.14em;color:var(--red-lt);margin-bottom:4px}
-.cmd-text{font-size:30px;line-height:1.15;font-weight:900;letter-spacing:-.01em}
+/* kept compact: normal copy must stay within 15% of the viewport height (text is never cut to get there) */
+.cmd .wrap{padding-top:8px;padding-bottom:10px}
+.cmd-step{display:inline-block;font-size:14px;line-height:1.2;font-weight:900;letter-spacing:.14em;color:var(--red-lt);margin-bottom:2px}
+.cmd-text{font-size:24px;line-height:1.1;font-weight:900;letter-spacing:-.015em}
 .cmd-text mark{background:var(--red);color:#fff;padding:0 .22em;border-radius:3px;white-space:nowrap}
 .cmd[data-tone=warn]{box-shadow:0 4px 0 var(--red)}
 .cmd[data-tone=bad]{background:var(--red);box-shadow:0 4px 0 var(--ink)}
@@ -206,7 +207,8 @@ details.hosp > summary .muted{font-weight:400;font-size:14px;margin-left:6px}
 
 @media (max-width:640px){
   body{font-size:16px}
-  .cmd-text{font-size:23px}
+  .cmd .wrap{padding:6px 14px 8px}
+  .cmd-text{font-size:20px}
   .answer h2{font-size:28px}
   .facts{grid-template-columns:1fr}
   .receipt{grid-template-columns:1fr}
