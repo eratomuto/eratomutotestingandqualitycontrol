@@ -245,7 +245,7 @@ details.hosp > summary .muted{font-weight:400;font-size:14px;margin-left:6px}
 
   <!-- 1: describe -->
   <section id="v1" aria-label="Describe the patient">
-    <h2 class="sr-only" id="v1H" tabindex="-1">Describe the patient</h2>
+    <h2 class="sr-only" id="v1H">Describe the patient</h2>
     <p class="why-rush">Referrals pile up because family doctors send them to the specialists they already know. <b>RUSH suggests the hospital that looks able to see the patient soonest.</b></p>
     <div class="card">
       <div class="examples" role="group" aria-label="Examples">
@@ -315,7 +315,7 @@ details.hosp > summary .muted{font-weight:400;font-size:14px;margin-left:6px}
           <svg id="mapSvg" viewBox="0 0 493 380" role="img" aria-labelledby="mapCap"></svg>
           <figcaption id="mapCap"></figcaption>
         </figure>
-        <div class="tbl"><table>
+        <div class="tbl" tabindex="0" role="region" aria-label="Hospital scores"><table>
           <thead><tr><th>Hospital</th><th class="r">Distance</th><th>How full</th><th>Specialist free?</th><th class="r">Score</th></tr></thead>
           <tbody id="scoreRows"></tbody>
         </table></div>
@@ -1204,12 +1204,12 @@ function newPatient() {
   $$('.ex').forEach(b => b.setAttribute('aria-pressed', 'false'));
   $('#findErr').hidden = true;
   renderHospitals();
-  show('v1', $('#v1H'));
+  show('v1', $('#notes'));
 }
 function backToNotes() {
   S.patient = null; S.plan = null; S.choice = null;
   renderHospitals();
-  show('v1', $('#v1H'));
+  show('v1', $('#notes'));
 }
 
 /* ================= demo: make a hospital busy ================= */
