@@ -1,0 +1,81 @@
+
+  RUSH: Referral Upkeep System for Healthcare
+
+  creating venv with /usr/local/bin/python3 ...
+  installing dependencies (first run takes about a minute) ...
+ANTHROPIC_API_KEY not found. Running in mock mode.
+
+  ui      http://localhost:5500
+  api     http://localhost:8000
+  docs    http://localhost:8000/docs
+  triage  keyword matching (put ANTHROPIC_API_KEY=... in a .env file to use claude)
+
+  ctrl+c to stop
+
+Mock triage complete: Urgency=7, Specialty=Cardiology
+Mock triage complete: Urgency=7, Specialty=Cardiology
+Mock triage complete: Urgency=7, Specialty=Cardiology
+Mock triage complete: Urgency=7, Specialty=Cardiology
+Mock triage complete: Urgency=7, Specialty=Cardiology
+Mock triage complete: Urgency=7, Specialty=Cardiology
+Mock triage complete: Urgency=7, Specialty=Cardiology
+Mock triage complete: Urgency=7, Specialty=Cardiology
+Mock triage complete: Urgency=7, Specialty=Cardiology
+Mock triage complete: Urgency=7, Specialty=Cardiology
+Mock triage complete: Urgency=7, Specialty=Cardiology
+Mock triage complete: Urgency=7, Specialty=Cardiology
+Mock triage complete: Urgency=7, Specialty=Cardiology
+Mock triage complete: Urgency=7, Specialty=Cardiology
+Mock triage complete: Urgency=7, Specialty=Cardiology
+Mock triage complete: Urgency=7, Specialty=Cardiology
+Mock triage complete: Urgency=7, Specialty=Cardiology
+Mock triage complete: Urgency=7, Specialty=Cardiology
+Mock triage complete: Urgency=7, Specialty=Cardiology
+Mock triage complete: Urgency=7, Specialty=Cardiology
+Mock triage complete: Urgency=7, Specialty=Cardiology
+Mock triage complete: Urgency=7, Specialty=Cardiology
+Mock triage complete: Urgency=7, Specialty=Cardiology
+Mock triage complete: Urgency=7, Specialty=Cardiology
+Mock triage complete: Urgency=7, Specialty=Cardiology
+Mock triage complete: Urgency=7, Specialty=Cardiology
+Mock triage complete: Urgency=7, Specialty=Cardiology
+Mock triage complete: Urgency=7, Specialty=Cardiology
+Mock triage complete: Urgency=7, Specialty=Cardiology
+Mock triage complete: Urgency=7, Specialty=Cardiology
+Mock triage complete: Urgency=7, Specialty=Cardiology
+Mock triage complete: Urgency=7, Specialty=Cardiology
+Mock triage complete: Urgency=7, Specialty=Cardiology
+Mock triage complete: Urgency=7, Specialty=Cardiology
+Mock triage complete: Urgency=7, Specialty=Cardiology
+Mock triage complete: Urgency=7, Specialty=Cardiology
+Mock triage complete: Urgency=7, Specialty=Cardiology
+Mock triage complete: Urgency=7, Specialty=Cardiology
+Mock triage complete: Urgency=7, Specialty=Cardiology
+Mock triage complete: Urgency=7, Specialty=Cardiology
+Mock triage complete: Urgency=7, Specialty=Cardiology
+Mock triage complete: Urgency=7, Specialty=Cardiology
+Mock triage complete: Urgency=7, Specialty=Cardiology
+Mock triage complete: Urgency=7, Specialty=Cardiology
+Mock triage complete: Urgency=7, Specialty=Cardiology
+Mock triage complete: Urgency=7, Specialty=Cardiology
+Mock triage complete: Urgency=7, Specialty=Cardiology
+Mock triage complete: Urgency=7, Specialty=Cardiology
+Mock triage complete: Urgency=7, Specialty=Cardiology
+Mock triage complete: Urgency=7, Specialty=Cardiology
+Mock triage complete: Urgency=7, Specialty=Cardiology
+Mock triage complete: Urgency=7, Specialty=Cardiology
+Mock triage complete: Urgency=7, Specialty=Cardiology
+Mock triage complete: Urgency=7, Specialty=Cardiology
+Mock triage complete: Urgency=7, Specialty=Cardiology
+Mock triage complete: Urgency=7, Specialty=Cardiology
+Mock triage complete: Urgency=7, Specialty=Cardiology
+Mock triage complete: Urgency=7, Specialty=Cardiology
+Mock triage complete: Urgency=7, Specialty=Cardiology
+Mock triage complete: Urgency=7, Specialty=Cardiology
+Mock triage complete: Urgency=7, Specialty=Cardiology
+Mock triage complete: Urgency=7, Specialty=Cardiology
+Mock triage complete: Urgency=7, Specialty=Cardiology
+Mock triage complete: Urgency=7, Specialty=Cardiology
+Mock triage complete: Urgency=7, Specialty=Cardiology
+
+  stopping ...

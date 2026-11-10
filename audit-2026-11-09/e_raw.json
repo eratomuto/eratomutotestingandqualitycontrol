@@ -1,0 +1,557 @@
+{
+ "c17": {
+  "3->4 (Routine -> See soon)": {
+   "start": {
+    "u": 3,
+    "sp": "Cardiology"
+   },
+   "apply": {
+    "u": 4
+   },
+   "before": {
+    "pill": "3/10 · Routine",
+    "hospital": "Cape Breton Regional Hospital",
+    "why": "Why: Routine, so RUSH picked the closest hospital with heart"
+   },
+   "after": {
+    "pill": "4/10 · See soon",
+    "pillClass": "urg med",
+    "hospital": "Cape Breton Regional Hospital",
+    "sub": "Sydney · joins the waiting list · 80% full (busy)",
+    "why": "Why: Should be seen soon, so RUSH weighed how full each hospital is, then the drive. Runner-up: North Nova Scotia Health Centre. vs. Halifax: 312 km less driving and 3 days more waiting.",
+    "driveTile": "0 km / Same town",
+    "waitTile": "8 days / around Tue, Nov 17",
+    "needTile": "Cardiology / heart care",
+    "bar": "You set urgency to 4/10 (See soon). Check it, then hit SEND REFERRAL.",
+    "check": null,
+    "active": "fixBtn"
+   },
+   "requestBody": {
+    "urgency_score": 4,
+    "primary_specialty_required": "Cardiology"
+   },
+   "receipt": {
+    "Urgency": "4/10, Cardiology (heart)",
+    "Urgency set by": "Doctor",
+    "Specialty set by": "(no row)",
+    "To": "Cape Breton Regional Hospital"
+   },
+   "copyRows": [
+    "Urgency: 4/10, Cardiology (heart)",
+    "Urgency set by: Doctor"
+   ],
+   "agree": {
+    "pillNumber": true,
+    "pillTierName": true,
+    "pillColourClass": true,
+    "whyLineTier": true,
+    "needTile": true,
+    "barMentionsChange": true,
+    "requestUrgency": true,
+    "requestSpecialty": true,
+    "receiptUrgencyRow": true,
+    "receiptHospitalEqualsReviewPick": true,
+    "receiptDistanceEqualsTile": true,
+    "receiptWaitEqualsTile": true,
+    "activeAfterApply": "fixBtn"
+   },
+   "allAgree": true,
+   "panelOptions": {
+    "urgency": [
+     "1 · Routine",
+     "2 · Routine",
+     "3 · Routine",
+     "4 · See soon",
+     "5 · See soon",
+     "6 · See soon",
+     "7 · See soon",
+     "8 · Emergency",
+     "9 · Emergency",
+     "10 · Emergency"
+    ],
+    "specialties": [
+     "Cardiology (heart)",
+     "Neurology (brain and nerve)",
+     "Orthopedics (bone and joint)",
+     "Oncology (cancer)",
+     "General Surgery (surgery)",
+     "General Medicine",
+     "Emergency Medicine (emergency)",
+     "Maternity (pregnancy and birth)"
+    ],
+    "expanded": "true"
+   }
+  },
+  "4->3 (See soon -> Routine)": {
+   "start": {
+    "u": 4,
+    "sp": "Cardiology"
+   },
+   "apply": {
+    "u": 3
+   },
+   "before": {
+    "pill": "4/10 · See soon",
+    "hospital": "Cape Breton Regional Hospital",
+    "why": "Why: Should be seen soon, so RUSH weighed how full each hosp"
+   },
+   "after": {
+    "pill": "3/10 · Routine",
+    "pillClass": "urg low",
+    "hospital": "Cape Breton Regional Hospital",
+    "sub": "Sydney · joins the waiting list · 80% full (busy)",
+    "why": "Why: Routine, so RUSH picked the closest hospital with heart care. Runner-up: North Nova Scotia Health Centre. vs. Halifax: 312 km less driving and 3 days more waiting.",
+    "driveTile": "0 km / Same town",
+    "waitTile": "8 days / around Tue, Nov 17",
+    "needTile": "Cardiology / heart care",
+    "bar": "You set urgency to 3/10 (Routine). Check it, then hit SEND REFERRAL.",
+    "check": null,
+    "active": "fixBtn"
+   },
+   "requestBody": {
+    "urgency_score": 3,
+    "primary_specialty_required": "Cardiology"
+   },
+   "receipt": {
+    "Urgency": "3/10, Cardiology (heart)",
+    "Urgency set by": "Doctor",
+    "Specialty set by": "(no row)",
+    "To": "Cape Breton Regional Hospital"
+   },
+   "copyRows": [
+    "Urgency: 3/10, Cardiology (heart)",
+    "Urgency set by: Doctor"
+   ],
+   "agree": {
+    "pillNumber": true,
+    "pillTierName": true,
+    "pillColourClass": true,
+    "whyLineTier": true,
+    "needTile": true,
+    "barMentionsChange": true,
+    "requestUrgency": true,
+    "requestSpecialty": true,
+    "receiptUrgencyRow": true,
+    "receiptHospitalEqualsReviewPick": true,
+    "receiptDistanceEqualsTile": true,
+    "receiptWaitEqualsTile": true,
+    "activeAfterApply": "fixBtn"
+   },
+   "allAgree": true
+  },
+  "7->8 (See soon -> Emergency)": {
+   "start": {
+    "u": 7,
+    "sp": "Cardiology"
+   },
+   "apply": {
+    "u": 8
+   },
+   "before": {
+    "pill": "7/10 · See soon",
+    "hospital": "Cape Breton Regional Hospital",
+    "why": "Why: Should be seen soon, so RUSH weighed how full each hosp"
+   },
+   "after": {
+    "pill": "8/10 · Emergency",
+    "pillClass": "urg high",
+    "hospital": "North Nova Scotia Health Centre",
+    "sub": "New Glasgow · Dr. Lee can take them · 77% full (busy)",
+    "why": "Why: Emergency, so RUSH went for a free heart specialist first. Runner-up: Colchester East Hants Health Centre. vs. Halifax: 109 km less driving and 4 days more waiting.",
+    "driveTile": "203 km / ~2 h 35 min by car",
+    "waitTile": "6 days / around Sun, Nov 15",
+    "needTile": "Cardiology / heart care",
+    "bar": "You set urgency to 8/10 (Emergency). Check it, then hit SEND REFERRAL.",
+    "check": null,
+    "active": "fixBtn"
+   },
+   "requestBody": {
+    "urgency_score": 8,
+    "primary_specialty_required": "Cardiology"
+   },
+   "receipt": {
+    "Urgency": "8/10, Cardiology (heart)",
+    "Urgency set by": "Doctor",
+    "Specialty set by": "(no row)",
+    "To": "North Nova Scotia Health Centre"
+   },
+   "copyRows": [
+    "Urgency: 8/10, Cardiology (heart)",
+    "Urgency set by: Doctor"
+   ],
+   "agree": {
+    "pillNumber": true,
+    "pillTierName": true,
+    "pillColourClass": true,
+    "whyLineTier": true,
+    "needTile": true,
+    "barMentionsChange": true,
+    "requestUrgency": true,
+    "requestSpecialty": true,
+    "receiptUrgencyRow": true,
+    "receiptHospitalEqualsReviewPick": true,
+    "receiptDistanceEqualsTile": true,
+    "receiptWaitEqualsTile": true,
+    "activeAfterApply": "fixBtn"
+   },
+   "allAgree": true
+  },
+  "8->7 (Emergency -> See soon)": {
+   "start": {
+    "u": 8,
+    "sp": "Cardiology"
+   },
+   "apply": {
+    "u": 7
+   },
+   "before": {
+    "pill": "8/10 · Emergency",
+    "hospital": "North Nova Scotia Health Centre",
+    "why": "Why: Emergency, so RUSH went for a free heart specialist fir"
+   },
+   "after": {
+    "pill": "7/10 · See soon",
+    "pillClass": "urg med",
+    "hospital": "Cape Breton Regional Hospital",
+    "sub": "Sydney · joins the waiting list · 80% full (busy)",
+    "why": "Why: Should be seen soon, so RUSH weighed how full each hospital is, then the drive. Runner-up: North Nova Scotia Health Centre. vs. Halifax: 312 km less driving and 2 days more waiting.",
+    "driveTile": "0 km / Same town",
+    "waitTile": "4 days / around Fri, Nov 13",
+    "needTile": "Cardiology / heart care",
+    "bar": "You set urgency to 7/10 (See soon). Check it, then hit SEND REFERRAL.",
+    "check": null,
+    "active": "fixBtn"
+   },
+   "requestBody": {
+    "urgency_score": 7,
+    "primary_specialty_required": "Cardiology"
+   },
+   "receipt": {
+    "Urgency": "7/10, Cardiology (heart)",
+    "Urgency set by": "Doctor",
+    "Specialty set by": "(no row)",
+    "To": "Cape Breton Regional Hospital"
+   },
+   "copyRows": [
+    "Urgency: 7/10, Cardiology (heart)",
+    "Urgency set by: Doctor"
+   ],
+   "agree": {
+    "pillNumber": true,
+    "pillTierName": true,
+    "pillColourClass": true,
+    "whyLineTier": true,
+    "needTile": true,
+    "barMentionsChange": true,
+    "requestUrgency": true,
+    "requestSpecialty": true,
+    "receiptUrgencyRow": true,
+    "receiptHospitalEqualsReviewPick": true,
+    "receiptDistanceEqualsTile": true,
+    "receiptWaitEqualsTile": true,
+    "activeAfterApply": "fixBtn"
+   },
+   "allAgree": true
+  },
+  "specialty only Cardiology->Orthopedics": {
+   "start": {
+    "u": 7,
+    "sp": "Cardiology"
+   },
+   "apply": {
+    "sp": "Orthopedics"
+   },
+   "before": {
+    "pill": "7/10 · See soon",
+    "hospital": "Cape Breton Regional Hospital",
+    "why": "Why: Should be seen soon, so RUSH weighed how full each hosp"
+   },
+   "after": {
+    "pill": "7/10 · See soon",
+    "pillClass": "urg med",
+    "hospital": "Antigonish Memorial",
+    "sub": "Antigonish · Dr. King can take them · 69% full (busy)",
+    "why": "Why: Should be seen soon, so RUSH weighed how full each hospital is, then the drive. Runner-up: Colchester East Hants Health Centre. vs. Halifax: 152 km less driving and 4 days less waiting.",
+    "driveTile": "160 km / ~2 h by car",
+    "waitTile": "3 days / around Thu, Nov 12",
+    "needTile": "Orthopedics / bone and joint care",
+    "bar": "You set the specialty to bone and joint care. Check it, then hit SEND REFERRAL.",
+    "check": null,
+    "active": "fixBtn"
+   },
+   "requestBody": {
+    "urgency_score": 7,
+    "primary_specialty_required": "Orthopedics"
+   },
+   "receipt": {
+    "Urgency": "7/10, Orthopedics (bone and joint)",
+    "Urgency set by": "AI",
+    "Specialty set by": "Doctor",
+    "To": "Antigonish Memorial"
+   },
+   "copyRows": [
+    "Urgency: 7/10, Orthopedics (bone and joint)",
+    "Urgency set by: AI",
+    "Specialty set by: Doctor"
+   ],
+   "agree": {
+    "pillNumber": true,
+    "pillTierName": true,
+    "pillColourClass": true,
+    "whyLineTier": true,
+    "needTile": true,
+    "barMentionsChange": true,
+    "requestUrgency": true,
+    "requestSpecialty": true,
+    "receiptUrgencyRow": true,
+    "receiptHospitalEqualsReviewPick": true,
+    "receiptDistanceEqualsTile": true,
+    "receiptWaitEqualsTile": true,
+    "activeAfterApply": "fixBtn"
+   },
+   "allAgree": true
+  },
+  "urgency 5->9 and specialty Cardiology->Neurology": {
+   "start": {
+    "u": 5,
+    "sp": "Cardiology"
+   },
+   "apply": {
+    "u": 9,
+    "sp": "Neurology"
+   },
+   "before": {
+    "pill": "5/10 · See soon",
+    "hospital": "Cape Breton Regional Hospital",
+    "why": "Why: Should be seen soon, so RUSH weighed how full each hosp"
+   },
+   "after": {
+    "pill": "9/10 · Emergency",
+    "pillClass": "urg high",
+    "hospital": "QEII Health Sciences Centre",
+    "sub": "Halifax · Dr. Wilson can take them · 85% full (busy)",
+    "why": "Why: Emergency, so RUSH went for a free brain and nerve specialist first. Runner-up: Saint John Regional Hospital (NB). Halifax is the right call here.",
+    "driveTile": "312 km / ~3 h 55 min by car",
+    "waitTile": "1 day / around Tue, Nov 10",
+    "needTile": "Neurology / brain and nerve care",
+    "bar": "You set urgency to 9/10 and the specialty to brain and nerve care. Check it, then hit SEND REFERRAL.",
+    "check": null,
+    "active": "fixBtn"
+   },
+   "requestBody": {
+    "urgency_score": 9,
+    "primary_specialty_required": "Neurology"
+   },
+   "receipt": {
+    "Urgency": "9/10, Neurology (brain and nerve)",
+    "Urgency set by": "Doctor",
+    "Specialty set by": "Doctor",
+    "To": "QEII Health Sciences Centre"
+   },
+   "copyRows": [
+    "Urgency: 9/10, Neurology (brain and nerve)",
+    "Urgency set by: Doctor",
+    "Specialty set by: Doctor"
+   ],
+   "agree": {
+    "pillNumber": true,
+    "pillTierName": true,
+    "pillColourClass": true,
+    "whyLineTier": true,
+    "needTile": true,
+    "barMentionsChange": true,
+    "requestUrgency": true,
+    "requestSpecialty": true,
+    "receiptUrgencyRow": true,
+    "receiptHospitalEqualsReviewPick": true,
+    "receiptDistanceEqualsTile": true,
+    "receiptWaitEqualsTile": true,
+    "activeAfterApply": "fixBtn"
+   },
+   "allAgree": true
+  },
+  "specialty no hospital offers (Oncology removed from /hubs)": {
+   "hospitalBefore": "Cape Breton Regional Hospital",
+   "msg": "No hospital in RUSH offers cancer care. Arrange it by phone.",
+   "msgVisible": true,
+   "panelOpen": true,
+   "sendDisabled": true,
+   "bar": "Send is off. CHANGE THE SPECIALTY or hit Cancel.",
+   "pill": "7/10 · See soon",
+   "hospital": "Cape Breton Regional Hospital",
+   "fixBtnDisabled": false,
+   "afterCtrlEnter": {
+    "referCalls": 0,
+    "view": "v2"
+   },
+   "afterCancel": {
+    "panelOpen": false,
+    "sendDisabled": false,
+    "active": "fixBtn",
+    "hospital": "Cape Breton Regional Hospital"
+   }
+  },
+  "Apply with nothing changed": {
+   "panelClosed": true,
+   "activeAfter": "fixBtn",
+   "pillSame": true,
+   "hospitalSame": true,
+   "barSame": true,
+   "receipt": {
+    "Urgency set by": "AI",
+    "Specialty set by": "(no row)"
+   }
+  },
+  "sources": {
+   "AI (stubbed AI-style result)": {
+    "screen": "AI",
+    "specialtyRow": "(no row)",
+    "copy": "Urgency set by: AI",
+    "printHasRow": true
+   },
+   "Keyword guess (server keyword mode)": {
+    "screen": "Keyword guess",
+    "specialtyRow": "(no row)",
+    "copy": "Urgency set by: Keyword guess",
+    "printHasRow": true
+   },
+   "Practice guess (server not running)": {
+    "screen": "Practice guess",
+    "specialtyRow": "(no row)",
+    "copy": "Urgency set by: Practice guess",
+    "printHasRow": true
+   },
+   "Doctor (urgency changed)": {
+    "screen": "Doctor",
+    "specialtyRow": "(no row)",
+    "copy": "Urgency set by: Doctor",
+    "printHasRow": true
+   },
+   "Doctor (specialty only changed)": {
+    "screen": "AI",
+    "specialtyRow": "Doctor",
+    "copy": [
+     "Urgency set by: AI",
+     "Specialty set by: Doctor"
+    ],
+    "printHasSpecialtyRow": true
+   }
+  },
+  "panelClearing": {
+   "openedPanel": {
+    "hidden": false,
+    "expanded": "true"
+   },
+   "afterBack": {
+    "hidden": true,
+    "expanded": "false",
+    "view": "v1"
+   },
+   "afterNewFindFromBack": {
+    "hidden": true,
+    "expanded": "false"
+   },
+   "reopened": {
+    "hidden": false,
+    "expanded": "true"
+   },
+   "afterNewFindAfterApply": {
+    "hidden": true,
+    "expanded": "false"
+   },
+   "receiptAfterBackThenNewFind": "AI",
+   "afterNextPatientAndNewFind": {
+    "hidden": true,
+    "expanded": "false"
+   },
+   "panelOpenedOnNewPatient": {
+    "hidden": false,
+    "expanded": "true"
+   },
+   "afterOpeningPicker": {
+    "hidden": true,
+    "expanded": "false"
+   }
+  }
+ },
+ "c18": {
+  "practice mode": {
+   "headline": "Practice referral (nothing was sent)",
+   "v3Label": "Practice referral (nothing was sent)",
+   "bar": "Practice referral (nothing was sent). Hit NEXT PATIENT for the next one.",
+   "timeRowLabel": "Practice run",
+   "allRowLabels": [
+    "Referral #",
+    "From",
+    "To",
+    "Specialist",
+    "Urgency",
+    "Urgency set by",
+    "Distance",
+    "Expected wait",
+    "Practice run"
+   ],
+   "copyFirstLine": "DEMO: simulated hospitals, not a real referral. Don't use it for real clinical decisions.",
+   "copySecondLine": "Practice referral (nothing was sent)",
+   "copyHasPracticeHeadline": true,
+   "copyTimeRowLabel": "Practice run",
+   "print": {
+    "firstChildIsDemoBanner": true,
+    "demoBannerDisplay": "block",
+    "demoBannerText": "DEMO: simulated hospitals, not a real referral. Don't use it for real clinical decisions.",
+    "headline": "Practice referral (nothing was sent)",
+    "timeRow": [
+     "Practice run"
+    ],
+    "hiddenInPrint": [
+     ".top",
+     ".cmd",
+     "#v1",
+     "#v2",
+     ".foot",
+     ".hosp",
+     "#v3 .actions"
+    ]
+   }
+  },
+  "server mode": {
+   "headline": "Referral sent",
+   "v3Label": "Referral sent",
+   "bar": "Sent. Hit NEXT PATIENT for the next one.",
+   "timeRowLabel": "Sent",
+   "allRowLabels": [
+    "Referral #",
+    "From",
+    "To",
+    "Specialist",
+    "Urgency",
+    "Urgency set by",
+    "Distance",
+    "Expected wait",
+    "Sent"
+   ],
+   "copyFirstLine": "DEMO: simulated hospitals, not a real referral. Don't use it for real clinical decisions.",
+   "copySecondLine": "Referral #: REF_0FA27F88",
+   "copyHasPracticeHeadline": false,
+   "copyTimeRowLabel": "Sent",
+   "print": {
+    "firstChildIsDemoBanner": true,
+    "demoBannerDisplay": "block",
+    "demoBannerText": "DEMO: simulated hospitals, not a real referral. Don't use it for real clinical decisions.",
+    "headline": "Referral sent",
+    "timeRow": [
+     "Sent"
+    ],
+    "hiddenInPrint": [
+     ".top",
+     ".cmd",
+     "#v1",
+     "#v2",
+     ".foot",
+     ".hosp",
+     "#v3 .actions"
+    ]
+   }
+  }
+ }
+}

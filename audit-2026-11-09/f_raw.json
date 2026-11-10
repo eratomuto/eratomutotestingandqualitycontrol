@@ -1,0 +1,411 @@
+{
+ "c19": [
+  {
+   "notes": "crushing chest pain, ST elevation, tropo",
+   "zip": "B1P 5E7",
+   "server": {
+    "pick": "Cape Breton Regional Hospital",
+    "urg": "7",
+    "sp": "Cardiology",
+    "km": "0 km",
+    "wait": "4 days",
+    "agree": {
+     "hospital": true,
+     "distance": true,
+     "wait": true,
+     "urgency": true
+    },
+    "bannerShown": false
+   },
+   "practice": {
+    "pick": "North Nova Scotia Health Centre",
+    "urg": "9",
+    "sp": "Cardiology",
+    "km": "203 km",
+    "wait": "3 days",
+    "agree": {
+     "hospital": true,
+     "distance": true,
+     "wait": true,
+     "urgency": true
+    },
+    "bannerShown": false
+   },
+   "serverWithPracticeTriage": {
+    "pick": "North Nova Scotia Health Centre",
+    "agree": {
+     "hospital": true,
+     "distance": true,
+     "wait": true,
+     "urgency": true
+    }
+   },
+   "samePickNaturally": false,
+   "sameTriageNaturally": false,
+   "samePickWhenTriageEqualised": true
+  },
+  {
+   "notes": "chronic knee pain, MRI shows meniscus te",
+   "zip": "B2N 1L5",
+   "server": {
+    "pick": "Colchester East Hants Health Centre",
+    "urg": "4",
+    "sp": "General Medicine",
+    "km": "0 km",
+    "wait": "7 days",
+    "agree": {
+     "hospital": true,
+     "distance": true,
+     "wait": true,
+     "urgency": true
+    },
+    "bannerShown": false
+   },
+   "practice": {
+    "pick": "Colchester East Hants Health Centre",
+    "urg": "4",
+    "sp": "Orthopedics",
+    "km": "0 km",
+    "wait": "8 days",
+    "agree": {
+     "hospital": true,
+     "distance": true,
+     "wait": true,
+     "urgency": true
+    },
+    "bannerShown": false
+   },
+   "serverWithPracticeTriage": {
+    "pick": "Colchester East Hants Health Centre",
+    "agree": {
+     "hospital": true,
+     "distance": true,
+     "wait": true,
+     "urgency": true
+    }
+   },
+   "samePickNaturally": true,
+   "sameTriageNaturally": false,
+   "samePickWhenTriageEqualised": true
+  },
+  {
+   "notes": "persistent right lower quadrant pain, fe",
+   "zip": "B4N 1V5",
+   "server": {
+    "pick": "South Shore Regional Hospital",
+    "urg": "4",
+    "sp": "General Medicine",
+    "km": "75 km",
+    "wait": "4 days",
+    "agree": {
+     "hospital": true,
+     "distance": true,
+     "wait": true,
+     "urgency": true
+    },
+    "bannerShown": false
+   },
+   "practice": {
+    "pick": "QEII Health Sciences Centre",
+    "urg": "6",
+    "sp": "General Surgery",
+    "km": "58 km",
+    "wait": "14 days",
+    "agree": {
+     "hospital": true,
+     "distance": true,
+     "wait": true,
+     "urgency": true
+    },
+    "bannerShown": false
+   },
+   "serverWithPracticeTriage": {
+    "pick": "QEII Health Sciences Centre",
+    "agree": {
+     "hospital": true,
+     "distance": true,
+     "wait": true,
+     "urgency": true
+    }
+   },
+   "samePickNaturally": false,
+   "sameTriageNaturally": false,
+   "samePickWhenTriageEqualised": true
+  },
+  {
+   "notes": "severe headache with seizure and weaknes",
+   "zip": "B0W 2M0",
+   "server": {
+    "pick": "QEII Health Sciences Centre",
+    "urg": "9",
+    "sp": "Neurology",
+    "km": "73 km",
+    "wait": "1 day",
+    "agree": {
+     "hospital": true,
+     "distance": true,
+     "wait": true,
+     "urgency": true
+    },
+    "bannerShown": false
+   },
+   "practice": {
+    "pick": "QEII Health Sciences Centre",
+    "urg": "9",
+    "sp": "Neurology",
+    "km": "73 km",
+    "wait": "1 day",
+    "agree": {
+     "hospital": true,
+     "distance": true,
+     "wait": true,
+     "urgency": true
+    },
+    "bannerShown": false
+   },
+   "serverWithPracticeTriage": {
+    "pick": "QEII Health Sciences Centre",
+    "agree": {
+     "hospital": true,
+     "distance": true,
+     "wait": true,
+     "urgency": true
+    }
+   },
+   "samePickNaturally": true,
+   "sameTriageNaturally": true,
+   "samePickWhenTriageEqualised": true
+  },
+  {
+   "notes": "tumor found on scan, cancer follow-up ne",
+   "zip": "B0N 1X0",
+   "server": {
+    "pick": "QEII Health Sciences Centre",
+    "urg": "3",
+    "sp": "Oncology",
+    "km": "219 km",
+    "wait": "14 days",
+    "agree": {
+     "hospital": true,
+     "distance": true,
+     "wait": true,
+     "urgency": true
+    },
+    "bannerShown": false
+   },
+   "practice": {
+    "pick": "QEII Health Sciences Centre",
+    "urg": "3",
+    "sp": "Oncology",
+    "km": "219 km",
+    "wait": "14 days",
+    "agree": {
+     "hospital": true,
+     "distance": true,
+     "wait": true,
+     "urgency": true
+    },
+    "bannerShown": false
+   },
+   "serverWithPracticeTriage": {
+    "pick": "QEII Health Sciences Centre",
+    "agree": {
+     "hospital": true,
+     "distance": true,
+     "wait": true,
+     "urgency": true
+    }
+   },
+   "samePickNaturally": true,
+   "sameTriageNaturally": true,
+   "samePickWhenTriageEqualised": true
+  },
+  {
+   "notes": "routine check of hip joint pain, chronic",
+   "zip": "B2H 1A1",
+   "server": {
+    "pick": "Antigonish Memorial",
+    "urg": "4",
+    "sp": "Orthopedics",
+    "km": "47 km",
+    "wait": "7 days",
+    "agree": {
+     "hospital": true,
+     "distance": true,
+     "wait": true,
+     "urgency": true
+    },
+    "bannerShown": false
+   },
+   "practice": {
+    "pick": "Antigonish Memorial",
+    "urg": "4",
+    "sp": "Orthopedics",
+    "km": "47 km",
+    "wait": "7 days",
+    "agree": {
+     "hospital": true,
+     "distance": true,
+     "wait": true,
+     "urgency": true
+    },
+    "bannerShown": false
+   },
+   "serverWithPracticeTriage": {
+    "pick": "Antigonish Memorial",
+    "agree": {
+     "hospital": true,
+     "distance": true,
+     "wait": true,
+     "urgency": true
+    }
+   },
+   "samePickNaturally": true,
+   "sameTriageNaturally": true,
+   "samePickWhenTriageEqualised": true
+  }
+ ],
+ "c20": {
+  "heldCtrlEnter_repeatsAfterCooldown": {
+   "view": "v2",
+   "triageCalls": 1,
+   "referCalls": 0
+  },
+  "heldCtrlEnter_thenFreshPress": {
+   "view": "v3",
+   "referCalls": 1
+  },
+  "receipt_ctrlEnter": {
+   "view": "v3",
+   "triageCalls": 1,
+   "referCalls": 1
+  },
+  "receipt_metaEnter_F1": {
+   "view": "v3",
+   "triageCalls": 1,
+   "referCalls": 1,
+   "notes": "chest pain for two hours"
+  },
+  "ctrlEnter_300msAfterFind": {
+   "view": "v2",
+   "referCalls": 0
+  },
+  "ctrlEnter_1300msAfterFind": {
+   "view": "v3",
+   "referCalls": 1
+  },
+  "F2_300msAfterBack": {
+   "view": "v1",
+   "notes": "typed after back",
+   "triageCalls": 1
+  },
+  "F2_1500msAfterBack": {
+   "view": "v2",
+   "notes": "35yo chronic knee pain, MRI sh",
+   "triageCalls": 2
+  },
+  "F1_300msAfterNextPatient": {
+   "view": "v1",
+   "notes": ""
+  },
+  "F1_1500msAfterNextPatient": {
+   "view": "v2",
+   "notes": "55yo male crushing chest pain,"
+  },
+  "heldF3": {
+   "triageCalls": 1,
+   "view": "v2"
+  }
+ },
+ "c21": {
+  "server": {
+   "requestCount": 8,
+   "networkHosts": [
+    "localhost:8000"
+   ],
+   "thirdPartyOrFontRequests": [],
+   "sentinelInAnyRequestUrl": 0,
+   "sentinelInLocation": false,
+   "sentinelInLocalStorage": false,
+   "sentinelInSessionStorage": false,
+   "localStorageKeys": [],
+   "sessionStorageKeys": [],
+   "consoleMessages": 3,
+   "sentinelInConsole": [],
+   "consoleSample": [
+    "info: [RUSH] Connected to the server.",
+    "info: [RUSH] Matched patient (urgency 7/10) to Cape Breton Regional Hospital.",
+    "info: [RUSH] Referral REF_16D8E51D sent to North Nova Scotia Health Centre."
+   ],
+   "requestBodiesContainingNote_expectedOnlyToLocalServer": [
+    "POST /triage",
+    "POST /refer"
+   ],
+   "sentinelInCopiedReceipt": false,
+   "finalUrl": "http://localhost:8000/"
+  },
+  "practice": {
+   "requestCount": 3,
+   "networkHosts": [
+    "localhost:5500",
+    "localhost:1"
+   ],
+   "thirdPartyOrFontRequests": [],
+   "sentinelInAnyRequestUrl": 0,
+   "sentinelInLocation": false,
+   "sentinelInLocalStorage": false,
+   "sentinelInSessionStorage": false,
+   "localStorageKeys": [
+    "rp.base"
+   ],
+   "sessionStorageKeys": [],
+   "consoleMessages": 4,
+   "sentinelInConsole": [],
+   "consoleSample": [
+    "error: Failed to load resource: net::ERR_UNSAFE_PORT",
+    "info: [RUSH] Server not found. Using practice mode.",
+    "info: [RUSH] Matched patient (urgency 7/10) to Cape Breton Regional Hospital.",
+    "info: [RUSH] Referral REF_92807D3F sent to North Nova Scotia Health Centre."
+   ],
+   "requestBodiesContainingNote_expectedOnlyToLocalServer": [],
+   "sentinelInCopiedReceipt": false,
+   "finalUrl": "http://localhost:5500/"
+  }
+ },
+ "c22": {
+  "step1": {
+   "footer": "DEMO: simulated hospitals, not a real referral. Don't use it for real clinical decisions.",
+   "footerVisible": true,
+   "printBanner": "DEMO: simulated hospitals, not a real referral. Don't use it for real clinical decisions.",
+   "tagline": "RUSH points each one to whoever can see the patient soonest.",
+   "taglineParagraph": "Referrals pile up because family doctors send them to the specialists they already know. RUSH points each one to whoever can see the patient soonest."
+  },
+  "step2": {
+   "footer": "DEMO: simulated hospitals, not a real referral. Don't use it for real clinical decisions.",
+   "footerVisible": true,
+   "printBanner": "DEMO: simulated hospitals, not a real referral. Don't use it for real clinical decisions.",
+   "tagline": "RUSH points each one to whoever can see the patient soonest.",
+   "taglineParagraph": "Referrals pile up because family doctors send them to the specialists they already know. RUSH points each one to whoever can see the patient soonest."
+  },
+  "step3": {
+   "footer": "DEMO: simulated hospitals, not a real referral. Don't use it for real clinical decisions.",
+   "footerVisible": true,
+   "printBanner": "DEMO: simulated hospitals, not a real referral. Don't use it for real clinical decisions.",
+   "tagline": "RUSH points each one to whoever can see the patient soonest.",
+   "taglineParagraph": "Referrals pile up because family doctors send them to the specialists they already know. RUSH points each one to whoever can see the patient soonest."
+  },
+  "copyFirstLine": "DEMO: simulated hospitals, not a real referral. Don't use it for real clinical decisions.",
+  "expected": {
+   "notice": "DEMO: simulated hospitals, not a real referral. Don't use it for real clinical decisions.",
+   "tagline": "RUSH points each one to whoever can see the patient soonest."
+  },
+  "matches": {
+   "tagline": true,
+   "footerStep1": true,
+   "footerStep2": true,
+   "footerStep3": true,
+   "printBannerAllSteps": true,
+   "copyFirstLine": true
+  }
+ }
+}

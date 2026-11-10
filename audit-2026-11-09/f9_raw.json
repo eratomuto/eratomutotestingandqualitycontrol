@@ -1,0 +1,863 @@
+{
+ "F9_7_slowFind": {
+  "timing": {
+   "firstSlowAtMs": 8109,
+   "at2s": {
+    "bar": "Hang on. Reading the notes and checking hospitals",
+    "step": "STEP 1 OF 3",
+    "btn": "Reading the notes…",
+    "btnDisabled": true,
+    "cancelVisible": true,
+    "live": "polite",
+    "view": "v1"
+   },
+   "at8_5s": {
+    "bar": "Still reading the notes. This is taking longer than usual.",
+    "step": "STEP 1 OF 3",
+    "btn": "Taking longer than usual…",
+    "btnDisabled": true,
+    "cancelVisible": true,
+    "live": "polite",
+    "view": "v1"
+   },
+   "at13_5s": {
+    "bar": "Make sure urgency 7/10 is right. Then hit SEND REFERRAL.",
+    "step": "STEP 2 OF 3 · CHECK FIRST",
+    "btn": "Find hospital →",
+    "btnDisabled": false,
+    "cancelVisible": false,
+    "live": "polite",
+    "view": "v2"
+   },
+   "afterIsSlowTextStillShown": false
+  },
+  "cancel (abort-respecting delay)": {
+   "typedBefore": {
+    "notes": "55yo male crushing chest pain, ST elevation V1-V4, troponin elevated",
+    "zip": "B1P 5E7"
+   },
+   "afterCancel": {
+    "view": "v1",
+    "notes": "55yo male crushing chest pain, ST elevation V1-V4, troponin elevated",
+    "zip": "B1P 5E7",
+    "notesUnchanged": true,
+    "zipUnchanged": true,
+    "findDisabled": false,
+    "findText": "Find hospital →",
+    "active": "findBtn",
+    "cancelVisible": false,
+    "bar": "Cancelled. Your notes are still here. Hit FIND HOSPITAL to try again."
+   },
+   "cancelAt": "about 2s",
+   "triageNetworkResponsesReceived": 0,
+   "lateAnswerArrivedAtMsAfterClick": [],
+   "changesDuringNext15s": [],
+   "screenAfter15s": {
+    "view": "v1",
+    "bar": "Cancelled. Your notes are still here. Hit FIND HOSPITAL to try again.",
+    "findErr": "",
+    "active": "findBtn",
+    "find": {
+     "disabled": false,
+     "text": "Find hospital →"
+    },
+    "cancel": {
+     "visible": false
+    }
+   }
+  },
+  "cancel + late answer that ignores abort": {
+   "typedBefore": {
+    "notes": "55yo male crushing chest pain, ST elevation V1-V4, troponin elevated",
+    "zip": "B1P 5E7"
+   },
+   "afterCancel": {
+    "view": "v1",
+    "notes": "55yo male crushing chest pain, ST elevation V1-V4, troponin elevated",
+    "zip": "B1P 5E7",
+    "notesUnchanged": true,
+    "zipUnchanged": true,
+    "findDisabled": false,
+    "findText": "Find hospital →",
+    "active": "findBtn",
+    "cancelVisible": false,
+    "bar": "Cancelled. Your notes are still here. Hit FIND HOSPITAL to try again."
+   },
+   "cancelAt": "about 2s",
+   "triageNetworkResponsesReceived": 1,
+   "lateAnswerArrivedAtMsAfterClick": [
+    12069
+   ],
+   "changesDuringNext15s": [],
+   "screenAfter15s": {
+    "view": "v1",
+    "bar": "Cancelled. Your notes are still here. Hit FIND HOSPITAL to try again.",
+    "findErr": "",
+    "active": "findBtn",
+    "find": {
+     "disabled": false,
+     "text": "Find hospital →"
+    },
+    "cancel": {
+     "visible": false
+    }
+   }
+  },
+  "fast": {
+   "samples": 1,
+   "reachedStep2": true,
+   "samplesWithSlowText": 0,
+   "after9_5s": {
+    "view": "v2",
+    "bar": "Make sure urgency 7/10 is right. Then hit SEND REFERRAL.",
+    "find": {
+     "disabled": false,
+     "text": "Find hospital →"
+    },
+    "cancelVisible": false
+   }
+  }
+ },
+ "F9_8_slowSend": {
+  "S1 picker closed": {
+   "hospBefore": "Cape Breton Regional Hospital",
+   "during": [
+    {
+     "sel": "#backBtn",
+     "disabled": true,
+     "tabIndex": 0,
+     "hiddenAttr": false,
+     "canTakeFocus": false,
+     "label": "← Change the notes"
+    },
+    {
+     "sel": "#pickBtn",
+     "disabled": true,
+     "tabIndex": 0,
+     "hiddenAttr": false,
+     "canTakeFocus": false,
+     "label": "Send somewhere else"
+    },
+    {
+     "sel": "#sendBtn",
+     "disabled": true,
+     "tabIndex": 0,
+     "hiddenAttr": false,
+     "canTakeFocus": false,
+     "label": "Sending…"
+    },
+    {
+     "sel": "#surgeBtn",
+     "disabled": true,
+     "tabIndex": 0,
+     "hiddenAttr": false,
+     "canTakeFocus": false,
+     "label": "Demo: make a hospital bu"
+    },
+    {
+     "sel": "#resetBtn",
+     "disabled": true,
+     "tabIndex": 0,
+     "hiddenAttr": true,
+     "canTakeFocus": false,
+     "label": "Put hospitals back"
+    },
+    {
+     "sel": "#pickList .opt[0]",
+     "disabled": true,
+     "tabIndex": 0,
+     "hiddenAttr": true,
+     "canTakeFocus": false,
+     "label": "Cape Breton Regional Hos"
+    },
+    {
+     "sel": "#pickList .opt[1]",
+     "disabled": true,
+     "tabIndex": 0,
+     "hiddenAttr": true,
+     "canTakeFocus": false,
+     "label": "Colchester East Hants He"
+    },
+    {
+     "sel": "#pickList .opt[2]",
+     "disabled": true,
+     "tabIndex": 0,
+     "hiddenAttr": true,
+     "canTakeFocus": false,
+     "label": "North Nova Scotia Health"
+    },
+    {
+     "sel": "#pickList .opt[3]",
+     "disabled": true,
+     "tabIndex": 0,
+     "hiddenAttr": true,
+     "canTakeFocus": false,
+     "label": "Saint John Regional Hosp"
+    },
+    {
+     "sel": "#pickList .opt[4]",
+     "disabled": true,
+     "tabIndex": 0,
+     "hiddenAttr": true,
+     "canTakeFocus": false,
+     "label": "QEII Health Sciences Cen"
+    },
+    {
+     "sel": "#pickList .opt[5]",
+     "disabled": true,
+     "tabIndex": 0,
+     "hiddenAttr": true,
+     "canTakeFocus": false,
+     "label": "Antigonish Memorial\n    "
+    },
+    {
+     "sel": "#pickList .opt[6]",
+     "disabled": true,
+     "tabIndex": 0,
+     "hiddenAttr": true,
+     "canTakeFocus": false,
+     "label": "Valley Regional Hospital"
+    },
+    {
+     "sel": "#pickList .opt[7]",
+     "disabled": true,
+     "tabIndex": 0,
+     "hiddenAttr": true,
+     "canTakeFocus": false,
+     "label": "Amherst Hospital\n      A"
+    },
+    {
+     "sel": "#pickList .opt[8]",
+     "disabled": true,
+     "tabIndex": 0,
+     "hiddenAttr": true,
+     "canTakeFocus": false,
+     "label": "South Shore Regional Hos"
+    },
+    {
+     "sel": "#pickList .opt[9]",
+     "disabled": true,
+     "tabIndex": 0,
+     "hiddenAttr": true,
+     "canTakeFocus": false,
+     "label": "Yarmouth Regional Memori"
+    }
+   ],
+   "attempts": {
+    "sendBtn": "clicked",
+    "backBtn": "clicked",
+    "pickBtn": "clicked",
+    "firstOpt": "not visible",
+    "useRush": "not visible",
+    "surgeBtn": "clicked",
+    "resetBtn": "not visible"
+   },
+   "mid": {
+    "bar": "Sending the referral",
+    "sendBtn": {
+     "disabled": true,
+     "text": "Sending…"
+    },
+    "view": "v2"
+   },
+   "tabReachableDuringWait": [
+    "summary \"Show the map and",
+    "summary \"Hospital capacit"
+   ],
+   "afterAttempts": {
+    "view": "v2",
+    "hospName": "Cape Breton Regional Hospital",
+    "pickerOpen": false,
+    "referCalls": 1,
+    "capacityCalls": 0,
+    "surgeHintVisible": false,
+    "referCallsBeforeAttempts": 1
+   },
+   "at8": {
+    "bar": "Still sending. This is taking longer than usual. Don't press Send again.",
+    "sendBtn": "Still sending. Don't press again.",
+    "sendDisabled": true,
+    "cancelButtonsVisible": [],
+    "cancelFindHidden": true,
+    "live": "polite"
+   },
+   "receiptAfterMs": 12337,
+   "refererNetworkRequestsTotal": 1,
+   "afterSuccessDomFlags": {
+    "view": "v3",
+    "rcH": "Referral sent",
+    "referCalls": 1,
+    "flags": [
+     "#backBtn:enabled",
+     "#pickBtn:enabled",
+     "#sendBtn:disabled",
+     "#surgeBtn:enabled",
+     "#resetBtn:enabled"
+    ],
+    "opts": [
+     "enabled",
+     "enabled",
+     "enabled",
+     "enabled",
+     "enabled",
+     "enabled",
+     "enabled",
+     "enabled",
+     "enabled",
+     "enabled"
+    ],
+    "useRush": []
+   },
+   "nextPatientThenStep2": {
+    "flags": [
+     "#backBtn:enabled",
+     "#pickBtn:enabled",
+     "#sendBtn:enabled",
+     "#surgeBtn:enabled",
+     "#resetBtn:enabled"
+    ],
+    "pickerOpen": true,
+    "opts": [
+     "enabled",
+     "enabled",
+     "enabled",
+     "enabled",
+     "enabled",
+     "enabled",
+     "enabled",
+     "enabled",
+     "enabled",
+     "enabled"
+    ]
+   }
+  },
+  "S2 picker open": {
+   "hospBefore": "Cape Breton Regional Hospital",
+   "during": [
+    {
+     "sel": "#backBtn",
+     "disabled": true,
+     "tabIndex": 0,
+     "hiddenAttr": false,
+     "canTakeFocus": false,
+     "label": "← Change the notes"
+    },
+    {
+     "sel": "#pickBtn",
+     "disabled": true,
+     "tabIndex": 0,
+     "hiddenAttr": false,
+     "canTakeFocus": false,
+     "label": "Close the list"
+    },
+    {
+     "sel": "#sendBtn",
+     "disabled": true,
+     "tabIndex": 0,
+     "hiddenAttr": false,
+     "canTakeFocus": false,
+     "label": "Sending…"
+    },
+    {
+     "sel": "#surgeBtn",
+     "disabled": true,
+     "tabIndex": 0,
+     "hiddenAttr": false,
+     "canTakeFocus": false,
+     "label": "Demo: make a hospital bu"
+    },
+    {
+     "sel": "#resetBtn",
+     "disabled": true,
+     "tabIndex": 0,
+     "hiddenAttr": true,
+     "canTakeFocus": false,
+     "label": "Put hospitals back"
+    },
+    {
+     "sel": "#pickList .opt[0]",
+     "disabled": true,
+     "tabIndex": 0,
+     "hiddenAttr": false,
+     "canTakeFocus": false,
+     "label": "Cape Breton Regional Hos"
+    },
+    {
+     "sel": "#pickList .opt[1]",
+     "disabled": true,
+     "tabIndex": 0,
+     "hiddenAttr": false,
+     "canTakeFocus": false,
+     "label": "Colchester East Hants He"
+    },
+    {
+     "sel": "#pickList .opt[2]",
+     "disabled": true,
+     "tabIndex": 0,
+     "hiddenAttr": false,
+     "canTakeFocus": false,
+     "label": "North Nova Scotia Health"
+    },
+    {
+     "sel": "#pickList .opt[3]",
+     "disabled": true,
+     "tabIndex": 0,
+     "hiddenAttr": false,
+     "canTakeFocus": false,
+     "label": "Saint John Regional Hosp"
+    },
+    {
+     "sel": "#pickList .opt[4]",
+     "disabled": true,
+     "tabIndex": 0,
+     "hiddenAttr": false,
+     "canTakeFocus": false,
+     "label": "QEII Health Sciences Cen"
+    },
+    {
+     "sel": "#pickList .opt[5]",
+     "disabled": true,
+     "tabIndex": 0,
+     "hiddenAttr": false,
+     "canTakeFocus": false,
+     "label": "Antigonish Memorial\n    "
+    },
+    {
+     "sel": "#pickList .opt[6]",
+     "disabled": true,
+     "tabIndex": 0,
+     "hiddenAttr": false,
+     "canTakeFocus": false,
+     "label": "Valley Regional Hospital"
+    },
+    {
+     "sel": "#pickList .opt[7]",
+     "disabled": true,
+     "tabIndex": 0,
+     "hiddenAttr": false,
+     "canTakeFocus": false,
+     "label": "Amherst Hospital\n      A"
+    },
+    {
+     "sel": "#pickList .opt[8]",
+     "disabled": true,
+     "tabIndex": 0,
+     "hiddenAttr": false,
+     "canTakeFocus": false,
+     "label": "South Shore Regional Hos"
+    },
+    {
+     "sel": "#pickList .opt[9]",
+     "disabled": true,
+     "tabIndex": 0,
+     "hiddenAttr": false,
+     "canTakeFocus": false,
+     "label": "Yarmouth Regional Memori"
+    }
+   ],
+   "attempts": {
+    "sendBtn": "clicked",
+    "backBtn": "clicked",
+    "pickBtn": "clicked",
+    "firstOpt": "clicked",
+    "useRush": "not visible",
+    "surgeBtn": "clicked",
+    "resetBtn": "not visible"
+   },
+   "mid": {
+    "bar": "Sending the referral",
+    "sendBtn": {
+     "disabled": true,
+     "text": "Sending…"
+    },
+    "view": "v2"
+   },
+   "tabReachableDuringWait": [
+    "summary \"Show the map and",
+    "summary \"Hospital capacit"
+   ],
+   "afterAttempts": {
+    "view": "v2",
+    "hospName": "Cape Breton Regional Hospital",
+    "pickerOpen": true,
+    "referCalls": 1,
+    "capacityCalls": 0,
+    "surgeHintVisible": false,
+    "referCallsBeforeAttempts": 1
+   },
+   "at8": {
+    "bar": "Still sending. This is taking longer than usual. Don't press Send again.",
+    "sendBtn": "Still sending. Don't press again.",
+    "sendDisabled": true,
+    "cancelButtonsVisible": [],
+    "cancelFindHidden": true,
+    "live": "polite"
+   },
+   "receiptAfterMs": 12836,
+   "refererNetworkRequestsTotal": 1,
+   "afterSuccessDomFlags": {
+    "view": "v3",
+    "rcH": "Referral sent",
+    "referCalls": 1,
+    "flags": [
+     "#backBtn:enabled",
+     "#pickBtn:enabled",
+     "#sendBtn:disabled",
+     "#surgeBtn:enabled",
+     "#resetBtn:enabled"
+    ],
+    "opts": [
+     "enabled",
+     "enabled",
+     "enabled",
+     "enabled",
+     "enabled",
+     "enabled",
+     "enabled",
+     "enabled",
+     "enabled",
+     "enabled"
+    ],
+    "useRush": []
+   },
+   "nextPatientThenStep2": {
+    "flags": [
+     "#backBtn:enabled",
+     "#pickBtn:enabled",
+     "#sendBtn:enabled",
+     "#surgeBtn:enabled",
+     "#resetBtn:enabled"
+    ],
+    "pickerOpen": true,
+    "opts": [
+     "enabled",
+     "enabled",
+     "enabled",
+     "enabled",
+     "enabled",
+     "enabled",
+     "enabled",
+     "enabled",
+     "enabled",
+     "enabled"
+    ]
+   }
+  },
+  "S3 other hospital chosen (Use RUSH pick shown)": {
+   "hospBefore": "Colchester East Hants Health Centre",
+   "during": [
+    {
+     "sel": "#backBtn",
+     "disabled": true,
+     "tabIndex": 0,
+     "hiddenAttr": false,
+     "canTakeFocus": false,
+     "label": "← Change the notes"
+    },
+    {
+     "sel": "#pickBtn",
+     "disabled": true,
+     "tabIndex": 0,
+     "hiddenAttr": false,
+     "canTakeFocus": false,
+     "label": "Send somewhere else"
+    },
+    {
+     "sel": "#sendBtn",
+     "disabled": true,
+     "tabIndex": 0,
+     "hiddenAttr": false,
+     "canTakeFocus": false,
+     "label": "Sending…"
+    },
+    {
+     "sel": "#surgeBtn",
+     "disabled": true,
+     "tabIndex": 0,
+     "hiddenAttr": false,
+     "canTakeFocus": false,
+     "label": "Demo: make a hospital bu"
+    },
+    {
+     "sel": "#resetBtn",
+     "disabled": true,
+     "tabIndex": 0,
+     "hiddenAttr": true,
+     "canTakeFocus": false,
+     "label": "Put hospitals back"
+    },
+    {
+     "sel": "#pickList .opt[0]",
+     "disabled": true,
+     "tabIndex": 0,
+     "hiddenAttr": true,
+     "canTakeFocus": false,
+     "label": "Cape Breton Regional Hos"
+    },
+    {
+     "sel": "#pickList .opt[1]",
+     "disabled": true,
+     "tabIndex": 0,
+     "hiddenAttr": true,
+     "canTakeFocus": false,
+     "label": "Colchester East Hants He"
+    },
+    {
+     "sel": "#pickList .opt[2]",
+     "disabled": true,
+     "tabIndex": 0,
+     "hiddenAttr": true,
+     "canTakeFocus": false,
+     "label": "North Nova Scotia Health"
+    },
+    {
+     "sel": "#pickList .opt[3]",
+     "disabled": true,
+     "tabIndex": 0,
+     "hiddenAttr": true,
+     "canTakeFocus": false,
+     "label": "Saint John Regional Hosp"
+    },
+    {
+     "sel": "#pickList .opt[4]",
+     "disabled": true,
+     "tabIndex": 0,
+     "hiddenAttr": true,
+     "canTakeFocus": false,
+     "label": "QEII Health Sciences Cen"
+    },
+    {
+     "sel": "#pickList .opt[5]",
+     "disabled": true,
+     "tabIndex": 0,
+     "hiddenAttr": true,
+     "canTakeFocus": false,
+     "label": "Antigonish Memorial\n    "
+    },
+    {
+     "sel": "#pickList .opt[6]",
+     "disabled": true,
+     "tabIndex": 0,
+     "hiddenAttr": true,
+     "canTakeFocus": false,
+     "label": "Valley Regional Hospital"
+    },
+    {
+     "sel": "#pickList .opt[7]",
+     "disabled": true,
+     "tabIndex": 0,
+     "hiddenAttr": true,
+     "canTakeFocus": false,
+     "label": "Amherst Hospital\n      A"
+    },
+    {
+     "sel": "#pickList .opt[8]",
+     "disabled": true,
+     "tabIndex": 0,
+     "hiddenAttr": true,
+     "canTakeFocus": false,
+     "label": "South Shore Regional Hos"
+    },
+    {
+     "sel": "#pickList .opt[9]",
+     "disabled": true,
+     "tabIndex": 0,
+     "hiddenAttr": true,
+     "canTakeFocus": false,
+     "label": "Yarmouth Regional Memori"
+    },
+    {
+     "sel": "#useRush",
+     "disabled": true,
+     "tabIndex": 0,
+     "hiddenAttr": false,
+     "canTakeFocus": false,
+     "label": "Use RUSH's pick"
+    }
+   ],
+   "attempts": {
+    "sendBtn": "clicked",
+    "backBtn": "clicked",
+    "pickBtn": "clicked",
+    "firstOpt": "not visible",
+    "useRush": "clicked",
+    "surgeBtn": "clicked",
+    "resetBtn": "not visible"
+   },
+   "mid": {
+    "bar": "Sending the referral",
+    "sendBtn": {
+     "disabled": true,
+     "text": "Sending…"
+    },
+    "view": "v2"
+   },
+   "tabReachableDuringWait": [
+    "summary \"Show the map and",
+    "summary \"Hospital capacit"
+   ],
+   "afterAttempts": {
+    "view": "v2",
+    "hospName": "Colchester East Hants Health Centre",
+    "pickerOpen": false,
+    "referCalls": 1,
+    "capacityCalls": 0,
+    "surgeHintVisible": false,
+    "referCallsBeforeAttempts": 1
+   },
+   "at8": {
+    "bar": "Still sending. This is taking longer than usual. Don't press Send again.",
+    "sendBtn": "Still sending. Don't press again.",
+    "sendDisabled": true,
+    "cancelButtonsVisible": [],
+    "cancelFindHidden": true,
+    "live": "polite"
+   },
+   "receiptAfterMs": 12835,
+   "refererNetworkRequestsTotal": 1,
+   "afterSuccessDomFlags": {
+    "view": "v3",
+    "rcH": "Referral sent",
+    "referCalls": 1,
+    "flags": [
+     "#backBtn:enabled",
+     "#pickBtn:enabled",
+     "#sendBtn:disabled",
+     "#surgeBtn:enabled",
+     "#resetBtn:enabled"
+    ],
+    "opts": [
+     "enabled",
+     "enabled",
+     "enabled",
+     "enabled",
+     "enabled",
+     "enabled",
+     "enabled",
+     "enabled",
+     "enabled",
+     "enabled"
+    ],
+    "useRush": [
+     "enabled"
+    ]
+   },
+   "nextPatientThenStep2": {
+    "flags": [
+     "#backBtn:enabled",
+     "#pickBtn:enabled",
+     "#sendBtn:enabled",
+     "#surgeBtn:enabled",
+     "#resetBtn:enabled"
+    ],
+    "pickerOpen": true,
+    "opts": [
+     "enabled",
+     "enabled",
+     "enabled",
+     "enabled",
+     "enabled",
+     "enabled",
+     "enabled",
+     "enabled",
+     "enabled",
+     "enabled"
+    ]
+   }
+  },
+  "500 picker closed": {
+   "activeElement": {
+    "id": "sendBtn",
+    "tag": "BUTTON",
+    "text": "Send referral →"
+   },
+   "sendErr": "Not sent.The server couldn't take this referral. Hit SEND REFERRAL to try again. If it fails again, phone the hospital.",
+   "bar": "It didn't send. Hit SEND REFERRAL to try again.",
+   "sendBtn": {
+    "text": "Send referral →",
+    "disabled": false
+   },
+   "flags": [
+    "#backBtn:enabled",
+    "#pickBtn:enabled",
+    "#surgeBtn:enabled",
+    "#resetBtn:enabled"
+   ],
+   "opts": [
+    "enabled",
+    "enabled",
+    "enabled",
+    "enabled",
+    "enabled",
+    "enabled",
+    "enabled",
+    "enabled",
+    "enabled",
+    "enabled"
+   ],
+   "referCalls": 1,
+   "view": "v2",
+   "optionChoiceAfterFailure": "n/a",
+   "backButtonWorksAfterFailure": "v1"
+  },
+  "500 picker open": {
+   "activeElement": {
+    "id": "sendBtn",
+    "tag": "BUTTON",
+    "text": "Send referral →"
+   },
+   "sendErr": "Not sent.The server couldn't take this referral. Hit SEND REFERRAL to try again. If it fails again, phone the hospital.",
+   "bar": "It didn't send. Hit SEND REFERRAL to try again.",
+   "sendBtn": {
+    "text": "Send referral →",
+    "disabled": false
+   },
+   "flags": [
+    "#backBtn:enabled",
+    "#pickBtn:enabled",
+    "#surgeBtn:enabled",
+    "#resetBtn:enabled"
+   ],
+   "opts": [
+    "enabled",
+    "enabled",
+    "enabled",
+    "enabled",
+    "enabled",
+    "enabled",
+    "enabled",
+    "enabled",
+    "enabled",
+    "enabled"
+   ],
+   "referCalls": 1,
+   "view": "v2",
+   "optionChoiceAfterFailure": "Cape Breton Regional Hospital -> Colchester East Hants Health Centre",
+   "backButtonWorksAfterFailure": "v1"
+  },
+  "normal success (fast), picker had been open": {
+   "view": "v3",
+   "flags": [
+    "#backBtn:enabled",
+    "#pickBtn:enabled",
+    "#sendBtn:disabled",
+    "#surgeBtn:enabled",
+    "#resetBtn:enabled"
+   ],
+   "opts": [
+    "enabled",
+    "enabled",
+    "enabled",
+    "enabled",
+    "enabled",
+    "enabled",
+    "enabled",
+    "enabled",
+    "enabled",
+    "enabled"
+   ],
+   "referCalls": 1,
+   "bar": "Sent. Hit NEXT PATIENT for the next one."
+  }
+ }
+}

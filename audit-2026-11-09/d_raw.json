@@ -1,0 +1,485 @@
+{
+ "c14": {
+  "typingUnknown_whileFocused": {
+   "anyPickerVisibleWhileTyping": false,
+   "samples": 7,
+   "last": {
+    "typed": "B3S 0B6",
+    "pickerVisible": false,
+    "focused": "zip"
+   }
+  },
+  "afterBlur": {
+   "pickerVisible": true,
+   "help": "RUSH doesn't know this postal code."
+  },
+  "findWithUnknown": {
+   "view": "v1",
+   "triageRequests": 0,
+   "pickerVisible": true,
+   "zipAriaInvalid": "true",
+   "help": "RUSH doesn't know this postal code.",
+   "bar": "PICK THE NEAREST TOWN, then hit FIND HOSPITAL.",
+   "focus": "town"
+  },
+  "letterOI": {
+   "whileTyping": {
+    "pickerVisible": false,
+    "help": "That has a letter O or I where a number goes. Did you mean 0 / 1?"
+   },
+   "afterBlur": {
+    "pickerVisible": true,
+    "help": "That has a letter O or I where a number goes. Did you mean 0 / 1?"
+   },
+   "findBlocked": true,
+   "triageRequests": 0,
+   "focus": "zip",
+   "bar": "Fix the postal code, then hit FIND HOSPITAL."
+  },
+  "sendGuard_unknownCodeForcedPastStep1": {
+   "view": "v1",
+   "reachedReviewScreen": false,
+   "findErrBox": "RUSH hit a problem.It couldn't finish matching this patient.",
+   "bar": "Hit FIND HOSPITAL again. If it keeps happening, phone the hospital.",
+   "referCalls": 0,
+   "consoleWarnings": [
+    "warning: [RUSH] Couldn't match: Cannot read properties of undefined (reading '0')"
+   ]
+  },
+  "typedKnown": {
+   "variants": [
+    {
+     "typed": "\"b1p 5e7\"",
+     "field": "B1P 5E7",
+     "pickerVisible": false,
+     "help": "Sydney ✓"
+    },
+    {
+     "typed": "\"B1P5E7\"",
+     "field": "B1P 5E7",
+     "pickerVisible": false,
+     "help": "Sydney ✓"
+    },
+    {
+     "typed": "\"b1p5e7\"",
+     "field": "B1P 5E7",
+     "pickerVisible": false,
+     "help": "Sydney ✓"
+    },
+    {
+     "typed": "\"B1P  5E7\"",
+     "field": "B1P 5E7",
+     "pickerVisible": false,
+     "help": "Sydney ✓"
+    },
+    {
+     "typed": "\"b3h2y9\"",
+     "field": "B3H 2Y9",
+     "pickerVisible": false,
+     "help": "Halifax ✓"
+    },
+    {
+     "typed": "\" B3H 2Y9 \"",
+     "field": "B3H 2Y9",
+     "pickerVisible": false,
+     "help": "Halifax ✓"
+    }
+   ],
+   "anyPicker": false,
+   "findWithLowercaseNoSpace": "reached v2",
+   "zipSentToServer": "B1P 5E7"
+  }
+ },
+ "c15": {
+  "pickedTown": {
+   "tileDriveSub": "Same town (near Truro)",
+   "pickSub": "See soon, so sorted by most room, then shortest drive. RUSH's pick stays on top. Distances are approximate, from near Truro.",
+   "pickerRows": [
+    "Truro · ~0 km · ~5 days wait · 73% full",
+    "New Glasgow · ~53 km · ~6 days wait · 77% full",
+    "Sydney · ~256 km · waiting list, ~4 days wait · 80% full",
+    "Saint John, NB · ~219 km · waiting list, ~5 days wait · 84% full",
+    "Halifax · ~83 km · ~2 days wait · 85% full",
+    "Kentville · ~78 km · no heart care · 75% full",
+    "Antigonish · ~97 km · no heart care · 69% full",
+    "Amherst · ~121 km · no heart care · 67% full",
+    "Bridgewater · ~143 km · no heart care · 78% full",
+    "Yarmouth · ~288 km · no heart care · 73% full"
+   ],
+   "tableHeader": "Distance (approximate)",
+   "tableCells": [
+    "~0 km",
+    "~53 km",
+    "~83 km",
+    "~219 km",
+    "~256 km",
+    "~78 km",
+    "~143 km",
+    "~288 km",
+    "~121 km",
+    "~97 km"
+   ],
+   "whyLine": "Why: Should be seen soon, so RUSH weighed how full each hospital is, then the drive. Runner-up: North Nova Scotia Health Centre. vs. Halifax: ~83 km less driving and 3 days more waiting.",
+   "summary": {
+    "rowsWithTilde": "10/10",
+    "cellsWithTilde": "10/10",
+    "pickSubSaysApproximate": true,
+    "headerSaysApproximate": true,
+    "halifaxLineHasTilde": true,
+    "halifaxLine": "vs. Halifax: ~83 km less driving and 3 days more waiting."
+   }
+  },
+  "typedKnown": {
+   "tileDriveSub": "Same town",
+   "pickSub": "See soon, so sorted by most room, then shortest drive. RUSH's pick stays on top.",
+   "pickerRows": [
+    "Sydney · 0 km · waiting list, ~4 days wait · 80% full",
+    "Truro · 256 km · ~5 days wait · 73% full",
+    "New Glasgow · 203 km · ~6 days wait · 77% full",
+    "Saint John, NB · 468 km · waiting list, ~5 days wait · 84% full",
+    "Halifax · 312 km · ~2 days wait · 85% full",
+    "Antigonish · 160 km · no heart care · 69% full",
+    "Kentville · 333 km · no heart care · 75% full",
+    "Amherst · 363 km · no heart care · 67% full",
+    "Bridgewater · 385 km · no heart care · 78% full",
+    "Yarmouth · 531 km · no heart care · 73% full"
+   ],
+   "tableHeader": "Distance",
+   "tableCells": [
+    "0 km",
+    "203 km",
+    "256 km",
+    "312 km",
+    "468 km",
+    "333 km",
+    "385 km",
+    "531 km",
+    "363 km",
+    "160 km"
+   ],
+   "whyLine": "Why: Should be seen soon, so RUSH weighed how full each hospital is, then the drive. Runner-up: North Nova Scotia Health Centre. vs. Halifax: 312 km less driving and 2 days more waiting.",
+   "summary": {
+    "rowsWithTilde": "5/10",
+    "cellsWithTilde": "0/10",
+    "pickSubSaysApproximate": false,
+    "headerSaysApproximate": false,
+    "halifaxLineHasTilde": false,
+    "halifaxLine": "vs. Halifax: 312 km less driving and 2 days more waiting."
+   }
+  }
+ },
+ "c16": {
+  "East Cape Breton typed": {
+   "datalist": [
+    "B1P 5E7=Sydney",
+    "B3H 2Y9=Halifax",
+    "B2N 1L5=Truro",
+    "B1S 1A1=East Cape Breton",
+    "B4N 1V5=Kentville",
+    "B0W 2M0=Bridgewater",
+    "B0N 1X0=Yarmouth",
+    "B0V 1N0=Amherst",
+    "B2H 1A1=New Glasgow",
+    "B2N 0A1=Antigonish",
+    "B1M 1A1=Glace Bay",
+    "B0J 1S0=Lunenburg",
+    "E2L 4L2=Saint John, NB"
+   ],
+   "pickerOptions": [
+    "=Choose a town",
+    "B0V 1N0=Amherst",
+    "B2N 0A1=Antigonish",
+    "B0W 2M0=Bridgewater",
+    "B1S 1A1=East Cape Breton",
+    "B1M 1A1=Glace Bay",
+    "B3H 2Y9=Halifax",
+    "B4N 1V5=Kentville",
+    "B0J 1S0=Lunenburg",
+    "B2H 1A1=New Glasgow",
+    "E2L 4L2=Saint John, NB",
+    "B1P 5E7=Sydney",
+    "B2N 1L5=Truro",
+    "B0N 1X0=Yarmouth"
+   ],
+   "helpLine": "East Cape Breton ✓",
+   "tileDriveSub": "~20 min by car",
+   "hospSub": "Sydney · joins the waiting list · 80% full (busy)",
+   "pickSub": "See soon, so sorted by most room, then shortest drive. RUSH's pick stays on top.",
+   "pickerRows": [
+    "Cape Breton Regional HospitalRUSH pick Sydney · 25 km · waiting list, ~4 days wait · 80% full",
+    "Colchester East Hants Health Centre Truro · 263 km · ~5 days wait · 73% full",
+    "North Nova Scotia Health Centre New Glasgow · 212 km · ~6 days wait · 77% full",
+    "Saint John Regional Hospital (NB) Saint John, NB · 478 km · waiting list, ~5 days wait · 84% full",
+    "QEII Health Sciences Centre Halifax · 314 km · ~2 days wait · 85% full",
+    "Antigonish Memorial Antigonish · 166 km · no heart care · 69% full",
+    "Valley Regional Hospital Kentville · 338 km · no heart care · 75% full",
+    "Amherst Hospital Amherst · 374 km · no heart care · 67% full",
+    "South Shore Regional Hospital Bridgewater · 387 km · no heart care · 78% full",
+    "Yarmouth Regional Memorial Yarmouth · 532 km · no heart care · 73% full"
+   ],
+   "mapCaption": "Route from the clinic to Cape Breton Regional Hospital in Sydney. Grey hospitals don't offer heart care.",
+   "tableHospitalCells": [
+    "→ Cape Breton Regional HospitalSydney",
+    "North Nova Scotia Health CentreNew Glasgow",
+    "Colchester East Hants Health CentreTruro",
+    "QEII Health Sciences CentreHalifax",
+    "Saint John Regional Hospital (NB)Saint John, NB",
+    "Valley Regional HospitalKentville",
+    "South Shore Regional HospitalBridgewater",
+    "Yarmouth Regional MemorialYarmouth",
+    "Amherst HospitalAmherst",
+    "Antigonish MemorialAntigonish"
+   ],
+   "drawerRows": [
+    "Halifax · Cardiology, Neurology, Oncolog",
+    "Truro · Cardiology, Orthopedics, General",
+    "Sydney · Cardiology, General Surgery, Em",
+    "Kentville · General Medicine, Orthopedic",
+    "Bridgewater · General Medicine, Emergenc",
+    "Yarmouth · General Medicine, Emergency M",
+    "Amherst · General Medicine, Emergency Me",
+    "New Glasgow · General Medicine, Cardiolo",
+    "Antigonish · General Medicine, Orthopedi",
+    "Saint John, NB · Neurology, Cardiology, "
+   ],
+   "receiptFrom": "B1S 1A1, East Cape Breton",
+   "copyText": "DEMO: simulated hospitals, not a real referral. Don't use it for real clinical decisions.\nReferral #: REF_FCD40B55\nFrom: B1S 1A1, East Cape Breton\nTo: Cape Breton Regional Hospital\nSpecialist: Waiting list\nUrgency: 7/10, Cardiology (heart)\nUrgency set by: Keyword guess\nDistance: 25 km\nExpected wait: 4 days, around Fri, Nov 13\nSent: Nov 9, 2026, 10:13 p.m.",
+   "copyFromLine": "From: B1S 1A1, East Cape Breton",
+   "stillShowingZipsName": []
+  },
+  "East Cape Breton picked": {
+   "datalist": [
+    "B1P 5E7=Sydney",
+    "B3H 2Y9=Halifax",
+    "B2N 1L5=Truro",
+    "B1S 1A1=East Cape Breton",
+    "B4N 1V5=Kentville",
+    "B0W 2M0=Bridgewater",
+    "B0N 1X0=Yarmouth",
+    "B0V 1N0=Amherst",
+    "B2H 1A1=New Glasgow",
+    "B2N 0A1=Antigonish",
+    "B1M 1A1=Glace Bay",
+    "B0J 1S0=Lunenburg",
+    "E2L 4L2=Saint John, NB"
+   ],
+   "pickerOptions": [
+    "=Choose a town",
+    "B0V 1N0=Amherst",
+    "B2N 0A1=Antigonish",
+    "B0W 2M0=Bridgewater",
+    "B1S 1A1=East Cape Breton",
+    "B1M 1A1=Glace Bay",
+    "B3H 2Y9=Halifax",
+    "B4N 1V5=Kentville",
+    "B0J 1S0=Lunenburg",
+    "B2H 1A1=New Glasgow",
+    "E2L 4L2=Saint John, NB",
+    "B1P 5E7=Sydney",
+    "B2N 1L5=Truro",
+    "B0N 1X0=Yarmouth"
+   ],
+   "helpLine": "Near East Cape Breton. Distances will be approximate.",
+   "tileDriveSub": "~20 min by car, from near East Cape Breton",
+   "hospSub": "Sydney · joins the waiting list · 80% full (busy)",
+   "pickSub": "See soon, so sorted by most room, then shortest drive. RUSH's pick stays on top. Distances are approximate, from near East Cape Breton.",
+   "pickerRows": [
+    "Cape Breton Regional HospitalRUSH pick Sydney · ~25 km · waiting list, ~4 days wait · 80% full",
+    "Colchester East Hants Health Centre Truro · ~263 km · ~5 days wait · 73% full",
+    "North Nova Scotia Health Centre New Glasgow · ~212 km · ~6 days wait · 77% full",
+    "Saint John Regional Hospital (NB) Saint John, NB · ~478 km · waiting list, ~5 days wait · 84% full",
+    "QEII Health Sciences Centre Halifax · ~314 km · ~2 days wait · 85% full",
+    "Antigonish Memorial Antigonish · ~166 km · no heart care · 69% full",
+    "Valley Regional Hospital Kentville · ~338 km · no heart care · 75% full",
+    "Amherst Hospital Amherst · ~374 km · no heart care · 67% full",
+    "South Shore Regional Hospital Bridgewater · ~387 km · no heart care · 78% full",
+    "Yarmouth Regional Memorial Yarmouth · ~532 km · no heart care · 73% full"
+   ],
+   "mapCaption": "Route from near East Cape Breton to Cape Breton Regional Hospital in Sydney. The start point is approximate. Grey hospitals don't offer heart care.",
+   "tableHospitalCells": [
+    "→ Cape Breton Regional HospitalSydney",
+    "North Nova Scotia Health CentreNew Glasgow",
+    "Colchester East Hants Health CentreTruro",
+    "QEII Health Sciences CentreHalifax",
+    "Saint John Regional Hospital (NB)Saint John, NB",
+    "Valley Regional HospitalKentville",
+    "South Shore Regional HospitalBridgewater",
+    "Yarmouth Regional MemorialYarmouth",
+    "Amherst HospitalAmherst",
+    "Antigonish MemorialAntigonish"
+   ],
+   "drawerRows": [
+    "Halifax · Cardiology, Neurology, Oncolog",
+    "Truro · Cardiology, Orthopedics, General",
+    "Sydney · Cardiology, General Surgery, Em",
+    "Kentville · General Medicine, Orthopedic",
+    "Bridgewater · General Medicine, Emergenc",
+    "Yarmouth · General Medicine, Emergency M",
+    "Amherst · General Medicine, Emergency Me",
+    "New Glasgow · General Medicine, Cardiolo",
+    "Antigonish · General Medicine, Orthopedi",
+    "Saint John, NB · Neurology, Cardiology, "
+   ],
+   "receiptFrom": "B3S 0B6 (clinic's own code), near East Cape Breton",
+   "copyText": "DEMO: simulated hospitals, not a real referral. Don't use it for real clinical decisions.\nReferral #: REF_F646A577\nFrom: B3S 0B6 (clinic's own code), near East Cape Breton\nTo: Cape Breton Regional Hospital\nSpecialist: Waiting list\nUrgency: 7/10, Cardiology (heart)\nUrgency set by: Keyword guess\nDistance: 25 km, approximate\nExpected wait: 4 days, around Fri, Nov 13\nSent: Nov 9, 2026, 10:13 p.m.",
+   "copyFromLine": "From: B3S 0B6 (clinic's own code), near East Cape Breton",
+   "stillShowingZipsName": []
+  },
+  "Saint John typed": {
+   "datalist": [
+    "B1P 5E7=Sydney",
+    "B3H 2Y9=Halifax",
+    "B2N 1L5=Truro",
+    "B1S 1A1=East Cape Breton",
+    "B4N 1V5=Kentville",
+    "B0W 2M0=Bridgewater",
+    "B0N 1X0=Yarmouth",
+    "B0V 1N0=Amherst",
+    "B2H 1A1=New Glasgow",
+    "B2N 0A1=Antigonish",
+    "B1M 1A1=Glace Bay",
+    "B0J 1S0=Lunenburg",
+    "E2L 4L2=Saint John, NB"
+   ],
+   "pickerOptions": [
+    "=Choose a town",
+    "B0V 1N0=Amherst",
+    "B2N 0A1=Antigonish",
+    "B0W 2M0=Bridgewater",
+    "B1S 1A1=East Cape Breton",
+    "B1M 1A1=Glace Bay",
+    "B3H 2Y9=Halifax",
+    "B4N 1V5=Kentville",
+    "B0J 1S0=Lunenburg",
+    "B2H 1A1=New Glasgow",
+    "E2L 4L2=Saint John, NB",
+    "B1P 5E7=Sydney",
+    "B2N 1L5=Truro",
+    "B0N 1X0=Yarmouth"
+   ],
+   "helpLine": "Saint John, NB ✓",
+   "tileDriveSub": "Same town",
+   "hospSub": "Saint John, NB · joins the waiting list · 84% full (busy)",
+   "pickSub": "See soon, so sorted by most room, then shortest drive. RUSH's pick stays on top.",
+   "pickerRows": [
+    "Saint John Regional Hospital (NB)RUSH pick Saint John, NB · 0 km · waiting list, ~5 days wait · 84% full",
+    "Colchester East Hants Health Centre Truro · 219 km · ~5 days wait · 73% full",
+    "North Nova Scotia Health Centre New Glasgow · 267 km · ~6 days wait · 77% full",
+    "Cape Breton Regional Hospital Sydney · 468 km · waiting list, ~4 days wait · 80% full",
+    "QEII Health Sciences Centre Halifax · 211 km · ~2 days wait · 85% full",
+    "Amherst Hospital Amherst · 106 km · no heart care · 67% full",
+    "Valley Regional Hospital Kentville · 158 km · no heart care · 75% full",
+    "South Shore Regional Hospital Bridgewater · 172 km · no heart care · 78% full",
+    "Yarmouth Regional Memorial Yarmouth · 202 km · no heart care · 73% full",
+    "Antigonish Memorial Antigonish · 314 km · no heart care · 69% full"
+   ],
+   "mapCaption": "The clinic and Saint John Regional Hospital (NB) are both in Saint John, NB, so there's no drive. Grey hospitals don't offer heart care.",
+   "tableHospitalCells": [
+    "→ Saint John Regional Hospital (NB)Saint John, NB",
+    "Colchester East Hants Health CentreTruro",
+    "North Nova Scotia Health CentreNew Glasgow",
+    "QEII Health Sciences CentreHalifax",
+    "Cape Breton Regional HospitalSydney",
+    "Valley Regional HospitalKentville",
+    "South Shore Regional HospitalBridgewater",
+    "Yarmouth Regional MemorialYarmouth",
+    "Amherst HospitalAmherst",
+    "Antigonish MemorialAntigonish"
+   ],
+   "drawerRows": [
+    "Halifax · Cardiology, Neurology, Oncolog",
+    "Truro · Cardiology, Orthopedics, General",
+    "Sydney · Cardiology, General Surgery, Em",
+    "Kentville · General Medicine, Orthopedic",
+    "Bridgewater · General Medicine, Emergenc",
+    "Yarmouth · General Medicine, Emergency M",
+    "Amherst · General Medicine, Emergency Me",
+    "New Glasgow · General Medicine, Cardiolo",
+    "Antigonish · General Medicine, Orthopedi",
+    "Saint John, NB · Neurology, Cardiology, "
+   ],
+   "receiptFrom": "E2L 4L2, Saint John, NB",
+   "copyText": "DEMO: simulated hospitals, not a real referral. Don't use it for real clinical decisions.\nReferral #: REF_13E24C93\nFrom: E2L 4L2, Saint John, NB\nTo: Saint John Regional Hospital (NB)\nSpecialist: Waiting list\nUrgency: 7/10, Cardiology (heart)\nUrgency set by: Keyword guess\nDistance: 0 km\nExpected wait: 5 days, around Sat, Nov 14\nSent: Nov 9, 2026, 10:13 p.m.",
+   "copyFromLine": "From: E2L 4L2, Saint John, NB",
+   "stillShowingZipsName": []
+  },
+  "Saint John picked": {
+   "datalist": [
+    "B1P 5E7=Sydney",
+    "B3H 2Y9=Halifax",
+    "B2N 1L5=Truro",
+    "B1S 1A1=East Cape Breton",
+    "B4N 1V5=Kentville",
+    "B0W 2M0=Bridgewater",
+    "B0N 1X0=Yarmouth",
+    "B0V 1N0=Amherst",
+    "B2H 1A1=New Glasgow",
+    "B2N 0A1=Antigonish",
+    "B1M 1A1=Glace Bay",
+    "B0J 1S0=Lunenburg",
+    "E2L 4L2=Saint John, NB"
+   ],
+   "pickerOptions": [
+    "=Choose a town",
+    "B0V 1N0=Amherst",
+    "B2N 0A1=Antigonish",
+    "B0W 2M0=Bridgewater",
+    "B1S 1A1=East Cape Breton",
+    "B1M 1A1=Glace Bay",
+    "B3H 2Y9=Halifax",
+    "B4N 1V5=Kentville",
+    "B0J 1S0=Lunenburg",
+    "B2H 1A1=New Glasgow",
+    "E2L 4L2=Saint John, NB",
+    "B1P 5E7=Sydney",
+    "B2N 1L5=Truro",
+    "B0N 1X0=Yarmouth"
+   ],
+   "helpLine": "Near Saint John, NB. Distances will be approximate.",
+   "tileDriveSub": "Same town (near Saint John, NB)",
+   "hospSub": "Saint John, NB · joins the waiting list · 84% full (busy)",
+   "pickSub": "See soon, so sorted by most room, then shortest drive. RUSH's pick stays on top. Distances are approximate, from near Saint John, NB.",
+   "pickerRows": [
+    "Saint John Regional Hospital (NB)RUSH pick Saint John, NB · ~0 km · waiting list, ~5 days wait · 84% full",
+    "Colchester East Hants Health Centre Truro · ~219 km · ~5 days wait · 73% full",
+    "North Nova Scotia Health Centre New Glasgow · ~267 km · ~6 days wait · 77% full",
+    "Cape Breton Regional Hospital Sydney · ~468 km · waiting list, ~4 days wait · 80% full",
+    "QEII Health Sciences Centre Halifax · ~211 km · ~2 days wait · 85% full",
+    "Amherst Hospital Amherst · ~106 km · no heart care · 67% full",
+    "Valley Regional Hospital Kentville · ~158 km · no heart care · 75% full",
+    "South Shore Regional Hospital Bridgewater · ~172 km · no heart care · 78% full",
+    "Yarmouth Regional Memorial Yarmouth · ~202 km · no heart care · 73% full",
+    "Antigonish Memorial Antigonish · ~314 km · no heart care · 69% full"
+   ],
+   "mapCaption": "The clinic is near Saint John, NB, close to Saint John Regional Hospital (NB), so there's no drive. Grey hospitals don't offer heart care.",
+   "tableHospitalCells": [
+    "→ Saint John Regional Hospital (NB)Saint John, NB",
+    "Colchester East Hants Health CentreTruro",
+    "North Nova Scotia Health CentreNew Glasgow",
+    "QEII Health Sciences CentreHalifax",
+    "Cape Breton Regional HospitalSydney",
+    "Valley Regional HospitalKentville",
+    "South Shore Regional HospitalBridgewater",
+    "Yarmouth Regional MemorialYarmouth",
+    "Amherst HospitalAmherst",
+    "Antigonish MemorialAntigonish"
+   ],
+   "drawerRows": [
+    "Halifax · Cardiology, Neurology, Oncolog",
+    "Truro · Cardiology, Orthopedics, General",
+    "Sydney · Cardiology, General Surgery, Em",
+    "Kentville · General Medicine, Orthopedic",
+    "Bridgewater · General Medicine, Emergenc",
+    "Yarmouth · General Medicine, Emergency M",
+    "Amherst · General Medicine, Emergency Me",
+    "New Glasgow · General Medicine, Cardiolo",
+    "Antigonish · General Medicine, Orthopedi",
+    "Saint John, NB · Neurology, Cardiology, "
+   ],
+   "receiptFrom": "B3S 0B6 (clinic's own code), near Saint John, NB",
+   "copyText": "DEMO: simulated hospitals, not a real referral. Don't use it for real clinical decisions.\nReferral #: REF_834E1A05\nFrom: B3S 0B6 (clinic's own code), near Saint John, NB\nTo: Saint John Regional Hospital (NB)\nSpecialist: Waiting list\nUrgency: 7/10, Cardiology (heart)\nUrgency set by: Keyword guess\nDistance: 0 km, approximate\nExpected wait: 5 days, around Sat, Nov 14\nSent: Nov 9, 2026, 10:13 p.m.",
+   "copyFromLine": "From: B3S 0B6 (clinic's own code), near Saint John, NB",
+   "stillShowingZipsName": []
+  }
+ }
+}

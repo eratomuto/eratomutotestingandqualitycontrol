@@ -1,0 +1,403 @@
+{
+ "check8_slowFind": {
+  "timing": {
+   "firstSlowAtMs": 8105,
+   "at2s": {
+    "bar": "Hang on. Reading the notes and checking hospitals",
+    "btn": "Reading the notes…",
+    "btnDisabled": true,
+    "cancelVisible": true,
+    "live": "polite",
+    "view": "v1"
+   },
+   "at8_5s": {
+    "bar": "Still reading the notes. This is taking longer than usual.",
+    "btn": "Taking longer than usual…",
+    "btnDisabled": true,
+    "cancelVisible": true,
+    "live": "polite",
+    "view": "v1"
+   },
+   "at13_5s": {
+    "bar": "Make sure urgency 7/10 is right. Then hit SEND REFERRAL.",
+    "btn": "Find hospital →",
+    "btnDisabled": false,
+    "cancelVisible": false,
+    "live": "polite",
+    "view": "v2"
+   },
+   "slowTextStillShownAfterFinish": false
+  },
+  "cancel at ~2 s, abort honoured": {
+   "landedOn": "v1",
+   "notesUnchanged": true,
+   "zipUnchanged": true,
+   "findDisabled": false,
+   "findText": "Find hospital →",
+   "activeAfterCancel": "findBtn",
+   "cancelVisible": false,
+   "bar": "Cancelled. Your notes are still here. Hit FIND HOSPITAL to try again.",
+   "lateTriageResponsesReceived": 0,
+   "changesDuring15s": []
+  },
+  "cancel at ~2 s, late answer ignores abort": {
+   "landedOn": "v1",
+   "notesUnchanged": true,
+   "zipUnchanged": true,
+   "findDisabled": false,
+   "findText": "Find hospital →",
+   "activeAfterCancel": "findBtn",
+   "cancelVisible": false,
+   "bar": "Cancelled. Your notes are still here. Hit FIND HOSPITAL to try again.",
+   "lateTriageResponsesReceived": 0,
+   "changesDuring15s": []
+  },
+  "fast": {
+   "changes": 5,
+   "anySlowText": false,
+   "last": {
+    "ms": 76,
+    "w": "findBtn",
+    "text": "Find hospital →"
+   }
+  }
+ },
+ "check9_slowSend": {
+  "picker closed": {
+   "hospitalBefore": "Cape Breton Regional Hospital",
+   "at8_5s": {
+    "bar": "Still sending. This is taking longer than usual. Don't press Send again.",
+    "sendBtn": "Still sending. Don't press again.",
+    "cancelButtonsVisible": [],
+    "cancelFindHidden": true
+   },
+   "duringWait_control": [
+    "#backBtn: disabled=true canFocus=false",
+    "#pickBtn: disabled=true canFocus=false",
+    "#fixBtn: disabled=true canFocus=false",
+    "#sendBtn: disabled=true canFocus=false",
+    "#surgeBtn: disabled=true canFocus=false",
+    "#fixApply: disabled=true canFocus=false (in hidden section)",
+    "#fixCancel: disabled=true canFocus=false (in hidden section)",
+    "#fixUrg: disabled=true canFocus=false (in hidden section)",
+    "#fixSpec: disabled=true canFocus=false (in hidden section)",
+    "#pickList .opt[0]: disabled=true canFocus=false (in hidden section)",
+    "#pickList .opt[1]: disabled=true canFocus=false (in hidden section)",
+    "#pickList .opt[2]: disabled=true canFocus=false (in hidden section)",
+    "#pickList .opt[3]: disabled=true canFocus=false (in hidden section)",
+    "#pickList .opt[4]: disabled=true canFocus=false (in hidden section)",
+    "#pickList .opt[5]: disabled=true canFocus=false (in hidden section)",
+    "#pickList .opt[6]: disabled=true canFocus=false (in hidden section)",
+    "#pickList .opt[7]: disabled=true canFocus=false (in hidden section)",
+    "#pickList .opt[8]: disabled=true canFocus=false (in hidden section)",
+    "#pickList .opt[9]: disabled=true canFocus=false (in hidden section)"
+   ],
+   "anyEnabledOrFocusable": [],
+   "attempts": {
+    "sendBtn": "clicked",
+    "#backBtn": "clicked",
+    "#pickBtn": "clicked",
+    "#fixBtn": "clicked",
+    "#fixApply": "not visible",
+    "#fixCancel": "not visible",
+    "#useRush": "not visible",
+    "#pickList .opt:not([aria-pressed=\"true\"])": "not visible",
+    "#surgeBtn": "clicked"
+   },
+   "afterAttempts": {
+    "view": "v2",
+    "hospName": "Cape Breton Regional Hospital",
+    "pickerOpen": false,
+    "panelOpen": false,
+    "referCalls": 1,
+    "capacityCalls": 0
+   },
+   "hospitalUnchanged": true,
+   "tabReachableDuringWait": [
+    "summary",
+    "summary"
+   ],
+   "referFetchCalls": 1,
+   "referNetworkRequests": 1,
+   "afterSuccessFlags": [
+    "#sendBtn[0]:DISABLED"
+   ]
+  },
+  "picker open": {
+   "hospitalBefore": "Cape Breton Regional Hospital",
+   "at8_5s": {
+    "bar": "Sending the referral",
+    "sendBtn": "Sending…",
+    "cancelButtonsVisible": [],
+    "cancelFindHidden": true
+   },
+   "duringWait_control": [
+    "#backBtn: disabled=true canFocus=false",
+    "#pickBtn: disabled=true canFocus=false",
+    "#fixBtn: disabled=true canFocus=false",
+    "#sendBtn: disabled=true canFocus=false",
+    "#surgeBtn: disabled=true canFocus=false",
+    "#fixApply: disabled=true canFocus=false (in hidden section)",
+    "#fixCancel: disabled=true canFocus=false (in hidden section)",
+    "#fixUrg: disabled=true canFocus=false (in hidden section)",
+    "#fixSpec: disabled=true canFocus=false (in hidden section)",
+    "#pickList .opt[0]: disabled=true canFocus=false",
+    "#pickList .opt[1]: disabled=true canFocus=false",
+    "#pickList .opt[2]: disabled=true canFocus=false",
+    "#pickList .opt[3]: disabled=true canFocus=false",
+    "#pickList .opt[4]: disabled=true canFocus=false",
+    "#pickList .opt[5]: disabled=true canFocus=false",
+    "#pickList .opt[6]: disabled=true canFocus=false",
+    "#pickList .opt[7]: disabled=true canFocus=false",
+    "#pickList .opt[8]: disabled=true canFocus=false",
+    "#pickList .opt[9]: disabled=true canFocus=false"
+   ],
+   "anyEnabledOrFocusable": [],
+   "attempts": {
+    "sendBtn": "clicked",
+    "#backBtn": "clicked",
+    "#pickBtn": "clicked",
+    "#fixBtn": "clicked",
+    "#fixApply": "not visible",
+    "#fixCancel": "not visible",
+    "#useRush": "not visible",
+    "#pickList .opt:not([aria-pressed=\"true\"])": "clicked",
+    "#surgeBtn": "clicked"
+   },
+   "afterAttempts": {
+    "view": "v2",
+    "hospName": "Cape Breton Regional Hospital",
+    "pickerOpen": true,
+    "panelOpen": false,
+    "referCalls": 1,
+    "capacityCalls": 0
+   },
+   "hospitalUnchanged": true,
+   "tabReachableDuringWait": [
+    "summary",
+    "summary"
+   ],
+   "referFetchCalls": 1,
+   "referNetworkRequests": 1,
+   "afterSuccessFlags": [
+    "#sendBtn[0]:DISABLED"
+   ]
+  },
+  "override to a hospital that offers it (Use RUSH pick in override note)": {
+   "hospitalBefore": "Colchester East Hants Health Centre",
+   "at8_5s": {
+    "bar": "Still sending. This is taking longer than usual. Don't press Send again.",
+    "sendBtn": "Still sending. Don't press again.",
+    "cancelButtonsVisible": [],
+    "cancelFindHidden": true
+   },
+   "duringWait_control": [
+    "#backBtn: disabled=true canFocus=false",
+    "#pickBtn: disabled=true canFocus=false",
+    "#fixBtn: disabled=true canFocus=false",
+    "#sendBtn: disabled=true canFocus=false",
+    "#surgeBtn: disabled=true canFocus=false",
+    "#fixApply: disabled=true canFocus=false (in hidden section)",
+    "#fixCancel: disabled=true canFocus=false (in hidden section)",
+    "#fixUrg: disabled=true canFocus=false (in hidden section)",
+    "#fixSpec: disabled=true canFocus=false (in hidden section)",
+    "#pickList .opt[0]: disabled=true canFocus=false (in hidden section)",
+    "#pickList .opt[1]: disabled=true canFocus=false (in hidden section)",
+    "#pickList .opt[2]: disabled=true canFocus=false (in hidden section)",
+    "#pickList .opt[3]: disabled=true canFocus=false (in hidden section)",
+    "#pickList .opt[4]: disabled=true canFocus=false (in hidden section)",
+    "#pickList .opt[5]: disabled=true canFocus=false (in hidden section)",
+    "#pickList .opt[6]: disabled=true canFocus=false (in hidden section)",
+    "#pickList .opt[7]: disabled=true canFocus=false (in hidden section)",
+    "#pickList .opt[8]: disabled=true canFocus=false (in hidden section)",
+    "#pickList .opt[9]: disabled=true canFocus=false (in hidden section)",
+    "#useRush: disabled=true canFocus=false"
+   ],
+   "anyEnabledOrFocusable": [],
+   "attempts": {
+    "sendBtn": "clicked",
+    "#backBtn": "clicked",
+    "#pickBtn": "clicked",
+    "#fixBtn": "clicked",
+    "#fixApply": "not visible",
+    "#fixCancel": "not visible",
+    "#useRush": "clicked",
+    "#pickList .opt:not([aria-pressed=\"true\"])": "not visible",
+    "#surgeBtn": "clicked"
+   },
+   "afterAttempts": {
+    "view": "v2",
+    "hospName": "Colchester East Hants Health Centre",
+    "pickerOpen": false,
+    "panelOpen": false,
+    "referCalls": 1,
+    "capacityCalls": 0
+   },
+   "hospitalUnchanged": true,
+   "tabReachableDuringWait": [
+    "summary",
+    "summary"
+   ],
+   "referFetchCalls": 1,
+   "referNetworkRequests": 1,
+   "afterSuccessFlags": [
+    "#sendBtn[0]:DISABLED"
+   ]
+  },
+  "override to a hospital that does not offer it (Use RUSH pick in mismatch banner)": {
+   "hospitalBefore": "Antigonish Memorial",
+   "at8_5s": {
+    "bar": "Still sending. This is taking longer than usual. Don't press Send again.",
+    "sendBtn": "Still sending. Don't press again.",
+    "cancelButtonsVisible": [],
+    "cancelFindHidden": true
+   },
+   "duringWait_control": [
+    "#backBtn: disabled=true canFocus=false",
+    "#pickBtn: disabled=true canFocus=false",
+    "#fixBtn: disabled=true canFocus=false",
+    "#sendBtn: disabled=true canFocus=false",
+    "#surgeBtn: disabled=true canFocus=false",
+    "#fixApply: disabled=true canFocus=false (in hidden section)",
+    "#fixCancel: disabled=true canFocus=false (in hidden section)",
+    "#fixUrg: disabled=true canFocus=false (in hidden section)",
+    "#fixSpec: disabled=true canFocus=false (in hidden section)",
+    "#pickList .opt[0]: disabled=true canFocus=false (in hidden section)",
+    "#pickList .opt[1]: disabled=true canFocus=false (in hidden section)",
+    "#pickList .opt[2]: disabled=true canFocus=false (in hidden section)",
+    "#pickList .opt[3]: disabled=true canFocus=false (in hidden section)",
+    "#pickList .opt[4]: disabled=true canFocus=false (in hidden section)",
+    "#pickList .opt[5]: disabled=true canFocus=false (in hidden section)",
+    "#pickList .opt[6]: disabled=true canFocus=false (in hidden section)",
+    "#pickList .opt[7]: disabled=true canFocus=false (in hidden section)",
+    "#pickList .opt[8]: disabled=true canFocus=false (in hidden section)",
+    "#pickList .opt[9]: disabled=true canFocus=false (in hidden section)",
+    "#useRush: disabled=true canFocus=false"
+   ],
+   "anyEnabledOrFocusable": [],
+   "attempts": {
+    "sendBtn": "clicked",
+    "#backBtn": "clicked",
+    "#pickBtn": "clicked",
+    "#fixBtn": "clicked",
+    "#fixApply": "not visible",
+    "#fixCancel": "not visible",
+    "#useRush": "clicked",
+    "#pickList .opt:not([aria-pressed=\"true\"])": "not visible",
+    "#surgeBtn": "clicked"
+   },
+   "afterAttempts": {
+    "view": "v2",
+    "hospName": "Antigonish Memorial",
+    "pickerOpen": false,
+    "panelOpen": false,
+    "referCalls": 1,
+    "capacityCalls": 0
+   },
+   "hospitalUnchanged": true,
+   "tabReachableDuringWait": [
+    "summary",
+    "summary"
+   ],
+   "referFetchCalls": 1,
+   "referNetworkRequests": 1,
+   "afterSuccessFlags": [
+    "#sendBtn[0]:DISABLED"
+   ]
+  },
+  "F1 panel open": {
+   "hospitalBefore": "Cape Breton Regional Hospital",
+   "at8_5s": {
+    "bar": "Still sending. This is taking longer than usual. Don't press Send again.",
+    "sendBtn": "Still sending. Don't press again.",
+    "cancelButtonsVisible": [
+     "fixCancel"
+    ],
+    "cancelFindHidden": true
+   },
+   "duringWait_control": [
+    "#backBtn: disabled=true canFocus=false",
+    "#pickBtn: disabled=true canFocus=false",
+    "#fixBtn: disabled=true canFocus=false",
+    "#sendBtn: disabled=true canFocus=false",
+    "#surgeBtn: disabled=true canFocus=false",
+    "#fixApply: disabled=true canFocus=false",
+    "#fixCancel: disabled=true canFocus=false",
+    "#fixUrg: disabled=true canFocus=false",
+    "#fixSpec: disabled=true canFocus=false",
+    "#pickList .opt[0]: disabled=true canFocus=false (in hidden section)",
+    "#pickList .opt[1]: disabled=true canFocus=false (in hidden section)",
+    "#pickList .opt[2]: disabled=true canFocus=false (in hidden section)",
+    "#pickList .opt[3]: disabled=true canFocus=false (in hidden section)",
+    "#pickList .opt[4]: disabled=true canFocus=false (in hidden section)",
+    "#pickList .opt[5]: disabled=true canFocus=false (in hidden section)",
+    "#pickList .opt[6]: disabled=true canFocus=false (in hidden section)",
+    "#pickList .opt[7]: disabled=true canFocus=false (in hidden section)",
+    "#pickList .opt[8]: disabled=true canFocus=false (in hidden section)",
+    "#pickList .opt[9]: disabled=true canFocus=false (in hidden section)"
+   ],
+   "anyEnabledOrFocusable": [],
+   "attempts": {
+    "sendBtn": "clicked",
+    "#backBtn": "clicked",
+    "#pickBtn": "clicked",
+    "#fixBtn": "clicked",
+    "#fixApply": "clicked",
+    "#fixCancel": "clicked",
+    "#useRush": "not visible",
+    "#pickList .opt:not([aria-pressed=\"true\"])": "not visible",
+    "#surgeBtn": "clicked"
+   },
+   "afterAttempts": {
+    "view": "v2",
+    "hospName": "Cape Breton Regional Hospital",
+    "pickerOpen": false,
+    "panelOpen": true,
+    "referCalls": 1,
+    "capacityCalls": 0
+   },
+   "hospitalUnchanged": true,
+   "tabReachableDuringWait": [
+    "summary",
+    "summary"
+   ],
+   "referFetchCalls": 1,
+   "referNetworkRequests": 1,
+   "afterSuccessFlags": [
+    "#sendBtn[0]:DISABLED"
+   ]
+  },
+  "500, picker closed": {
+   "active": "sendBtn",
+   "sendBtn": {
+    "text": "Send referral →",
+    "disabled": false
+   },
+   "disabledAfterFailure": []
+  },
+  "500, F1 panel open": {
+   "active": "sendBtn",
+   "sendBtn": {
+    "text": "Send referral →",
+    "disabled": false
+   },
+   "disabledAfterFailure": []
+  },
+  "500, picker open": {
+   "active": "sendBtn",
+   "sendBtn": {
+    "text": "Send referral →",
+    "disabled": false
+   },
+   "disabledAfterFailure": []
+  },
+  "normal success (fast), picker had been open": {
+   "view": "v3",
+   "disabledAfter": [
+    "#sendBtn[0]:DISABLED"
+   ],
+   "note": "sendBtn stays disabled on the hidden step 2 until the next match re-enables it",
+   "afterNextPatientStep2Disabled": []
+  }
+ }
+}
