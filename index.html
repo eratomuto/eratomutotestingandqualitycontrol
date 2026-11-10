@@ -323,7 +323,7 @@ details.hosp > summary .muted{font-weight:400;font-size:14px;margin-left:6px}
           <figcaption id="mapCap"></figcaption>
         </figure>
         <div class="tbl" tabindex="0" role="region" aria-label="Hospital scores"><table>
-          <thead><tr><th>Hospital</th><th class="r">Distance</th><th>How full</th><th>Specialist free?</th><th class="r">Score</th></tr></thead>
+          <thead><tr><th>Hospital</th><th class="r" id="thDist">Distance</th><th>How full</th><th>Specialist free?</th><th class="r">Score</th></tr></thead>
           <tbody id="scoreRows"></tbody>
         </table></div>
         <p class="score-note" id="scoreNote"></p>
@@ -999,8 +999,11 @@ function target() {
   return {hub:h, dist:hubDistance(h, p.home_clinic_zip), specialist:sp, wait:estWait(h, sp, p.urgency_score),
     n:availSpecs(h, p.primary_specialty_required).length, mine:true, offers:(h.specialties || []).includes(p.primary_specialty_required)};
 }
+// A distance measured from a picked town (not from the clinic's own code) is shown with "~" wherever it is listed.
+const kmText = (km, near) => `${near ? '~' : ''}${km.toFixed(0)} km`;
 function halifaxVerdict(t) {
   const p = S.patient, sp = p.primary_specialty_required, u = p.urgency_score;
+  const ap = nearIn(S.nearUsed, p.home_clinic_zip) ? '~' : '';
   const hal = hubById('HAL_QEII') || S.hubs.find(h => /^B3/.test(h.postal_code));
   if (!hal) return '';
   if (t.hub.hub_id === hal.hub_id) return t.mine ? '' : '<b>Halifax is the right call here.</b>';
@@ -1008,7 +1011,7 @@ function halifaxVerdict(t) {
   if (!offers) return `<b>Halifax doesn't offer ${esc(plainSp(sp))} care in this system.</b>`;
   const nvDist = hubDistance(hal, p.home_clinic_zip), nvWait = estWait(hal, pickSpecialist(hal, sp, u), u);
   const dKm = Math.round(t.dist) - Math.round(nvDist), dD = t.wait - nvWait;
-  const km = dKm < 0 ? `<b>${-dKm} km less driving</b>` : dKm > 0 ? `<b class="worse">${dKm} km more driving</b>` : '<b>the same drive</b>';
+  const km = dKm < 0 ? `<b>${ap}${-dKm} km less driving</b>` : dKm > 0 ? `<b class="worse">${ap}${dKm} km more driving</b>` : '<b>the same drive</b>';
   const days = dD < 0 ? `<b>${plural(-dD, 'day')} less waiting</b>` : dD > 0 ? `<b class="worse">${plural(dD, 'day')} more waiting</b>` : 'the same wait';
   return `vs. Halifax: ${km} and ${days}.`;
 }
@@ -1058,6 +1061,7 @@ const PICK_ORDER = {
 };
 function renderPicker() {
   const p = S.patient, r = S.plan, sp = p.primary_specialty_required, cur = target().hub.hub_id, order = PICK_ORDER[r.tier];
+  const near = nearIn(S.nearUsed, p.home_clinic_zip);
   const info = h => {
     const s = pickSpecialist(h, sp, p.urgency_score);
     return {h, dist:hubDistance(h, p.home_clinic_zip), cap:capScore(h), free:s ? 1 : 0, wait:estWait(h, s, p.urgency_score),
@@ -1069,13 +1073,13 @@ function renderPicker() {
     const wait = x.offers ? B('wait', `${x.free ? '' : 'waiting list, '}~${plural(x.wait, 'day')} wait`) : `no ${esc(plainSp(sp))} care`;
     return `<button class="opt${x.offers ? '' : ' no'}" type="button" data-id="${esc(x.h.hub_id)}" aria-pressed="${x.cur}">
       <span class="on">${esc(x.h.name)}</span>${tag}
-      <span class="om">${townOf(x.h) ? esc(townOf(x.h)) + ' · ' : ''}${B('dist', `${x.dist.toFixed(0)} km`)} · ${wait} · ${B('full', `${Math.round(loadPct(x.h))}% full`)}</span></button>`;
+      <span class="om">${townOf(x.h) ? esc(townOf(x.h)) + ' · ' : ''}${B('dist', kmText(x.dist, near))} · ${wait} · ${B('full', `${Math.round(loadPct(x.h))}% full`)}</span></button>`;
   };
   const all = S.hubs.map(info);
   const rush = all.filter(x => x.rush);                                      // suggestion always on top
   const yes = all.filter(x => x.offers && !x.rush).sort(order.cmp);
   const no = all.filter(x => !x.offers).sort((a, b) => (a.dist - b.dist));   // no specialty: just nearest first
-  $('#pickSub').textContent = `${order.say} RUSH's pick stays on top.`;
+  $('#pickSub').textContent = `${order.say} RUSH's pick stays on top.${near ? ` Distances are approximate, from near ${near}.` : ''}`;
   $('#pickList').innerHTML = [...rush, ...yes].map(opt).join('')
     + (no.length ? `<h4>Don't offer ${esc(plainSp(sp))} care</h4>` + no.map(opt).join('') : '');
 }
@@ -1113,11 +1117,13 @@ function renderMatch() {
   $('#readList').innerHTML = `<dt>Symptoms</dt><dd>${list(p.key_symptoms)}</dd><dt>Risks</dt><dd>${list(p.acute_risks)}</dd><dt>Medications</dt><dd>${list(p.current_medications)}</dd>`;
   drawMap(target().hub, false);
   const rows = [...r.ranked, ...r.out];
+  const near = nearIn(S.nearUsed, p.home_clinic_zip);        // distances measured from a picked town are approximate
+  $('#thDist').textContent = near ? 'Distance (approximate)' : 'Distance';
   $('#scoreRows').innerHTML = rows.map(x => {
     const pick = x.eligible && x === best;
     return `<tr class="${pick ? 'pick' : ''}${x.eligible ? '' : ' out'}">
       <td>${pick ? '→ ' : ''}${esc(x.hub.name)}<br><span class="muted">${esc(townOf(x.hub))}</span></td>
-      <td class="r num">${x.dist.toFixed(0)} km</td>
+      <td class="r num">${kmText(x.dist, near)}</td>
       <td>${Math.round(loadPct(x.hub))}%</td>
       <td>${x.eligible ? (x.n ? `Yes, ${x.n}` : 'No') : `No ${esc(plainSp(p.primary_specialty_required))} care`}</td>
       <td class="r num">${x.eligible ? Math.round(x.score * 100) : '–'}</td></tr>`;
