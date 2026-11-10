@@ -456,7 +456,7 @@ const S = {
   hubs: [], sig: {}, baseline: {},
   surged: new Set(), mock: null, provErr: false,
   patient: null, plan: null, choice: null, referral: null,
-  running: false,
+  running: false, matchedLive: false,   // matchedLive: the current match came from the real server
   near: null,      // {zip, town}: the code came from the Nearest town picker, not from the clinic
   nearUsed: null,  // copy of near taken when Find is pressed, so later edits can't relabel this patient
 };
@@ -598,6 +598,12 @@ async function mockApi(method, path, {body, query} = {}) {
 
 /* ================= server connection ================= */
 class HttpError extends Error { constructor(status, msg) { super(msg); this.status = status; } }
+class Unreachable extends Error {            // no answer at all: refused, offline, or timed out
+  constructor(cause) { super(cause && cause.message || 'no answer'); this.timedOut = !!cause && cause.name === 'AbortError'; }
+}
+class RushError extends Error {              // a problem the page found itself: 'unreadable' | 'nospecialty'
+  constructor(kind, detail, specialty) { super(detail); this.kind = kind; this.specialty = specialty; }
+}
 function detailText(d) {
   if (!d) return '';
   if (typeof d === 'string') return d;
@@ -616,11 +622,14 @@ async function raw(method, path, {body, query, timeout = 4000} = {}) {
     return data;
   } finally { clearTimeout(t); }
 }
+// opts.live: this call must reach the real server. It never drops into practice mode, because a
+// referral matched on a live server that "sends" into practice mode would show a receipt for nothing.
 async function api(method, path, opts = {}) {
-  if (S.online === false) return mockApi(method, path, opts);
+  if (S.online === false && !opts.live) return mockApi(method, path, opts);
   try { return await raw(method, path, opts); }
   catch (e) {
     if (e instanceof HttpError) throw e;
+    if (opts.live) throw new Unreachable(e);
     setOnline(false);
     return mockApi(method, path, opts);
   }
@@ -732,6 +741,44 @@ async function loop() {
   setTimeout(loop, 5000);
 }
 
+/* ================= plain-language errors ================= */
+// Each cause gets its own message: what happened, then what to do. Technical detail goes to the console only.
+const isGateway = e => e instanceof HttpError && [502, 503, 504].includes(e.status);   // a host answered, the app behind it didn't
+const detailOf = e => e instanceof HttpError ? `${e.status} ${e.message}` : (e && e.message) || String(e);
+const MIN_NOTE_WORDS = 2;
+function findMessage(e) {
+  if (e instanceof RushError && e.kind === 'unreadable') return {
+    what: 'Couldn\'t tell the urgency from these notes.',
+    fix: 'Add the symptoms and how long they\'ve lasted. Then hit FIND HOSPITAL.',
+    bar: `Notes unclear. ${K('ADD DETAIL')}, then hit FIND HOSPITAL.`};
+  if (e instanceof RushError && e.kind === 'nospecialty') return {
+    what: `No hospital in RUSH offers ${plainSp(e.specialty)} care.`,
+    fix: 'Arrange this referral by phone.',
+    bar: `No match in RUSH. ${K('ARRANGE IT BY PHONE')}.`};
+  if (e instanceof Unreachable || isGateway(e)) return {
+    what: 'Can\'t reach the server.',
+    fix: 'Check that RUSH is running. Your notes are still here. Then hit FIND HOSPITAL.',
+    bar: `Can't reach the server. Check it, then hit ${K('FIND HOSPITAL')} again.`};
+  return {
+    what: 'RUSH hit a problem.',
+    fix: 'Hit FIND HOSPITAL to try again. If it keeps happening, phone the hospital.',
+    bar: `That didn't work. Hit ${K('FIND HOSPITAL')} again.`};
+}
+function sendMessage(e) {
+  if (e instanceof Unreachable && e.timedOut) return {
+    what: 'Not sent. The server didn\'t answer in time.',
+    fix: 'It may have gone through. Check with the hospital before you send again.',
+    bar: `Not sure it sent. ${K('CHECK WITH THE HOSPITAL')} first.`};
+  if (e instanceof Unreachable || isGateway(e)) return {
+    what: 'Not sent. Can\'t reach the server.',
+    fix: 'Check that RUSH is running. Then hit SEND REFERRAL again.',
+    bar: `Not sent. Check the server, then hit ${K('SEND REFERRAL')} again.`};
+  return {
+    what: 'Not sent.',
+    fix: 'The server couldn\'t take this referral. Hit SEND REFERRAL to try again. If it fails again, phone the hospital.',
+    bar: `It didn't send. Hit ${K('SEND REFERRAL')} to try again.`};
+}
+
 /* ================= step 1 ================= */
 function normZip(v) {
   const s = String(v || '').toUpperCase().replace(/\s+/g, '');
@@ -801,6 +848,7 @@ async function findHospital() {
   if (S.running) return;
   const notes = $('#notes').value.trim(), zip = normZip($('#zip').value);
   if (!notes) return fieldErr('notes', 'Paste the doctor\'s notes here.', `You skipped the notes. ${K('PASTE THEM')} first.`);
+  if (notes.split(/\s+/).length < MIN_NOTE_WORDS) return fieldErr('notes', 'The notes are too short to read. Add the symptoms and how long they\'ve lasted.', `Notes too short. ${K('ADD DETAIL')}, then hit FIND HOSPITAL.`);
   if (!zip) return fieldErr('zip', 'Type a postal code, like B1P 5E7.', `No postal code. ${K('TYPE IT IN')}, then hit FIND HOSPITAL.`);
   $('#zip').value = zip;
   const bad = zipProblem(zip);
@@ -824,23 +872,22 @@ async function findHospital() {
   triP.catch(() => {}); hubsP.catch(() => {});
   try {
     const tri = await triP;
-    if (!tri || !tri.urgency_score || !tri.primary_specialty_required) throw new Error('The notes came back without an urgency score or specialty. Add more detail and try again.');
+    if (!tri || !tri.urgency_score || !tri.primary_specialty_required) throw new RushError('unreadable', 'triage returned no urgency or specialty');
     btn.textContent = 'Checking hospitals…';
     ingestHubs(await hubsP);
     const plan = route(tri, S.hubs);
-    if (!plan.best) throw new Error(`No hospital in RUSH offers ${specLabel(tri.primary_specialty_required)}. Arrange this one by phone.`);
-    S.patient = tri; S.plan = plan;
+    if (!plan.best) throw new RushError('nospecialty', `no hospital offers ${tri.primary_specialty_required}`, tri.primary_specialty_required);
+    S.patient = tri; S.plan = plan; S.matchedLive = S.online === true;
     renderMatch();
     renderHospitals();
     log(`Matched patient (urgency ${tri.urgency_score}/10) to ${plan.best.hub.name}.`);
     show('v2', $('#hospName'));
   } catch (e) {
-    const msg = e instanceof HttpError ? `The server said: ${e.message} (error ${e.status}).` : e.message;
-    const box = $('#findErr');
-    box.innerHTML = `<b>Couldn't find a hospital.</b>${esc(msg)}`;
+    const m = findMessage(e), box = $('#findErr');
+    box.innerHTML = `<b>${esc(m.what)}</b>${esc(m.fix)}`;
     box.hidden = false;
-    cmd('STEP 1 OF 3', `That didn't work. Read the red box, fix it, hit ${K('FIND HOSPITAL')} again.`, 'bad');
-    log(`Couldn't match: ${msg}`, true);
+    cmd('STEP 1 OF 3', m.bar, 'bad');
+    log(`Couldn't match: ${detailOf(e)}`, true);
   } finally {
     S.running = false;
     btn.disabled = false; btn.textContent = 'Find hospital →';
@@ -1083,7 +1130,7 @@ async function sendReferral() {
   cmd('STEP 2 OF 3', 'Sending the referral', 'busy');
   try {
     const want = target().hub;
-    const ref = await api('POST', '/refer', {body:S.patient, query: S.choice ? {hub_id:S.choice} : undefined, timeout:35000});
+    const ref = await api('POST', '/refer', {body:S.patient, query: S.choice ? {hub_id:S.choice} : undefined, timeout:35000, live:S.matchedLive});
     S.referral = ref;
     renderReceipt(ref);
     show('v3', $('#rcH'));
@@ -1093,12 +1140,12 @@ async function sendReferral() {
     log(`Referral ${ref.referral_id} sent to ${ref.target_hub_name}.`);
     refreshHospitals();
   } catch (e) {
-    const msg = e instanceof HttpError ? `The server said: ${e.message} (error ${e.status}).` : e.message;
-    $('#sendErr').innerHTML = `<b>Not sent.</b>${esc(msg)}`;
+    const m = sendMessage(e);
+    $('#sendErr').innerHTML = `<b>${esc(m.what)}</b>${esc(m.fix)}`;
     $('#sendErr').hidden = false;
     btn.disabled = false; btn.textContent = 'Send referral →';
-    cmd('STEP 2 OF 3', `It didn't send. Hit ${K('SEND REFERRAL')} to try again.`, 'bad');
-    log(`Referral not sent: ${msg}`, true);
+    cmd('STEP 2 OF 3', m.bar, 'bad');
+    log(`Referral not sent: ${detailOf(e)}`, true);
   } finally { S.sending = false; }
 }
 // said on anything that leaves the screen (copied text, printed page); the on-screen footer carries the same warning
