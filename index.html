@@ -492,6 +492,7 @@ const S = {
   waitTimer: null, waitSlow: false,   // the "taking longer than usual" timer, and whether it has fired
   shownAt: -Infinity,       // when the current screen appeared (performance.now()), for the shortcut cooldown
   doctorUrgency: false, doctorSpecialty: false,   // the doctor changed urgency / specialty on the review screen (F1)
+  urgencySource: 'AI',      // who set the urgency when the match was made: AI, Keyword guess or Practice guess
   fixBlocked: false,        // the doctor asked for a specialty no hospital offers: Send stays off until it is fixed
   practiceReceipt: false,   // the current receipt came from practice mode: the server never got it
   running: false, matchedLive: false,   // matchedLive: the current match came from the real server
@@ -963,7 +964,7 @@ async function findHospital() {
     ingestHubs(hubs);
     const plan = route(tri, S.hubs);
     if (!plan.best) throw new RushError('nospecialty', `no hospital offers ${tri.primary_specialty_required}`, tri.primary_specialty_required);
-    S.patient = tri; S.plan = plan; S.matchedLive = S.online === true;
+    S.patient = tri; S.plan = plan; S.matchedLive = S.online === true; S.urgencySource = urgencySourceLabel(tri);
     renderMatch();
     renderHospitals();
     log(`Matched patient (urgency ${tri.urgency_score}/10) to ${plan.best.hub.name}.`);
@@ -994,8 +995,12 @@ function driveText(km) {
   const m = Math.max(5, Math.round(km / 80 * 60 / 5) * 5), h = Math.floor(m / 60), mm = m % 60;
   return `~${h ? `${h} h` : ''}${h && mm ? ' ' : ''}${mm ? `${mm} min` : ''} by car`;
 }
+// the server's keyword fallback marks its made-up symptoms and risks with "mock"
+const looksMocked = p => (p.key_symptoms || []).some(s => /^mock/.test(s)) || (p.acute_risks || []).includes('mock_risk');
+// who set the urgency, recorded when the match is made: shown on the receipt ("Urgency set by")
+const urgencySourceLabel = p => S.online === false ? 'Practice guess' : looksMocked(p) ? 'Keyword guess' : 'AI';
 function triageSource(p) {
-  const mocked = (p.key_symptoms || []).some(s => /^mock/.test(s)) || (p.acute_risks || []).includes('mock_risk');
+  const mocked = looksMocked(p);
   if (S.doctorUrgency) return {mocked, check:false, msg:''};   // the doctor set the urgency, so it is no longer a guess
   if (S.online === false) return {mocked:false, check:true, msg:'Practice mode guessed the urgency from keywords. Make sure it\'s right before you send.'};
   if (mocked) return {mocked:true, check:true, msg:`${S.aiLive ? 'The AI couldn\'t read these notes' : 'No AI key is set up'}, so the urgency is a keyword guess. Make sure it's right before you send.`};
@@ -1346,6 +1351,8 @@ function receiptRows(ref) {
     ...(ref.manual_override ? [['Chosen by', `You (RUSH suggested ${ref.suggested_hub_name})`]] : []),
     ['Specialist', s ? s.name : 'Waiting list'],
     ['Urgency', `${ref.urgency_score}/10, ${specLabel(ref.required_specialty)}`],
+    ['Urgency set by', S.doctorUrgency ? 'Doctor' : S.urgencySource],
+    ...(S.doctorSpecialty ? [['Specialty set by', 'Doctor']] : []),
     ['Distance', `${Number(ref.distance_km).toFixed(0)} km${near ? ', approximate' : ''}`],
     ['Expected wait', wait],
     [S.practiceReceipt ? 'Practice run' : 'Sent', when],
