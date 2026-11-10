@@ -241,7 +241,7 @@ details.hosp > summary .muted{font-weight:400;font-size:14px;margin-left:6px}
 
   <!-- 1: describe -->
   <section id="v1" aria-label="Describe the patient">
-    <p class="why-rush">Referrals pile up because family doctors send them to the specialists they already know. <b>RUSH sends each one to whoever can see the patient soonest.</b></p>
+    <p class="why-rush">Referrals pile up because family doctors send them to the specialists they already know. <b>RUSH suggests the hospital that looks able to see the patient soonest.</b></p>
     <div class="card">
       <div class="examples" role="group" aria-label="Examples">
         <span>No notes? Try one:</span>
@@ -341,7 +341,7 @@ details.hosp > summary .muted{font-weight:400;font-size:14px;margin-left:6px}
 
   <!-- live hospitals, tucked away -->
   <details class="hosp" id="hospitals">
-    <summary>Hospital capacity (live)<span class="muted" id="hospUpdated"></span></summary>
+    <summary>Hospital capacity (simulated)<span class="muted" id="hospUpdated"></span></summary>
     <div class="inner">
       <div id="hlist" aria-busy="true"></div>
       <div class="demo">
@@ -353,7 +353,7 @@ details.hosp > summary .muted{font-weight:400;font-size:14px;margin-left:6px}
   </details>
 </main>
 
-<footer class="foot">RUSH is a demo. Hospital numbers are simulated. Don't use it for real clinical decisions.</footer>
+<footer class="foot" id="footDemo"></footer>
 
 <script>
 (() => {
@@ -456,8 +456,9 @@ const S = {
   hubs: [], sig: {}, baseline: {},
   surged: new Set(), mock: null, provErr: false,
   patient: null, plan: null, choice: null, referral: null,
+  practiceReceipt: false,   // the current receipt came from practice mode: the server never got it
   running: false, matchedLive: false,   // matchedLive: the current match came from the real server
-  near: null,      // {zip, town}: the code came from the Nearest town picker, not from the clinic
+  near: null,      // {zip, town, typed}: the code came from the Nearest town picker; typed = the doctor's own code, or ''
   nearUsed: null,  // copy of near taken when Find is pressed, so later edits can't relabel this patient
 };
 const nearIn = (n, zip) => (n && n.zip === zip ? n.town : '');   // town name if this code was picked, else ''
@@ -684,7 +685,7 @@ function cmdForView() {
       ? cmd('STEP 2 OF 3 · CHECK FIRST', `Make sure urgency ${S.patient.urgency_score}/10 is right. Then hit ${K('SEND REFERRAL')}.`, 'warn')
       : cmd('STEP 2 OF 3', `Send to ${esc(townOf(h))}? Looks right? Hit ${K('SEND REFERRAL')}.`);
   }
-  if (S.view === 'v3') return cmd('DONE', `Sent. Hit ${K('NEXT PATIENT')} for the next one.`, 'done');
+  if (S.view === 'v3') return cmd('DONE', `${S.practiceReceipt ? PRACTICE_HEAD : 'Sent'}. Hit ${K('NEXT PATIENT')} for the next one.`, 'done');
 }
 function show(v, focusEl) {
   S.view = v;
@@ -766,7 +767,7 @@ function findMessage(e) {
 }
 function sendMessage(e) {
   if (e instanceof Unreachable && e.timedOut) return {
-    what: 'Not sent. The server didn\'t answer in time.',
+    what: 'Not sure it sent.',
     fix: 'It may have gone through. Check with the hospital before you send again.',
     bar: `Not sure it sent. ${K('CHECK WITH THE HOSPITAL')} first.`};
   if (e instanceof Unreachable || isGateway(e)) return {
@@ -820,8 +821,11 @@ function updateZipHelp(settled = true) {
 function pickTown() {
   const z = $('#town').value;
   if (ZIPS[z]) {
+    // keep the code the doctor typed (a second pick keeps the first one); only a well-formed code RUSH lacks counts
+    const cur = normZip($('#zip').value);
+    const typed = nearIn(S.near, cur) ? S.near.typed : (zipProblem(cur) === 'unknown' ? cur : '');
     $('#zip').value = z;                       // the town's known code goes into the postal field
-    S.near = {zip:z, town:ZIPS[z][2]};
+    S.near = {zip:z, town:ZIPS[z][2], typed};
   }
   updateZipHelp();
   if (!S.running) cmdForView();                // clears any red "pick a town" message in the bar
@@ -1132,10 +1136,11 @@ async function sendReferral() {
     const want = target().hub;
     const ref = await api('POST', '/refer', {body:S.patient, query: S.choice ? {hub_id:S.choice} : undefined, timeout:35000, live:S.matchedLive});
     S.referral = ref;
+    S.practiceReceipt = !S.matchedLive && S.online === false;   // answered by practice mode, not the server
     renderReceipt(ref);
     show('v3', $('#rcH'));
     if (ref.target_hub_id !== want.hub_id) {
-      cmd('DONE · HEADS UP', `Hospitals changed, so it went to ${esc(ref.target_hub_name)}. Hit ${K('NEXT PATIENT')} when ready.`, 'warn');
+      cmd('DONE · HEADS UP', `Hospitals changed, so ${S.practiceReceipt ? 'the practice referral' : 'it'} went to ${esc(ref.target_hub_name)}. Hit ${K('NEXT PATIENT')} when ready.`, 'warn');
     }
     log(`Referral ${ref.referral_id} sent to ${ref.target_hub_name}.`);
     refreshHospitals();
@@ -1148,8 +1153,10 @@ async function sendReferral() {
     log(`Referral not sent: ${detailOf(e)}`, true);
   } finally { S.sending = false; }
 }
-// said on anything that leaves the screen (copied text, printed page); the on-screen footer carries the same warning
-const DEMO_NOTICE = 'DEMO: simulated hospitals, not a real referral';
+// the one demo warning: shown in the footer, and on anything that leaves the screen (copied text, printed page)
+const DEMO_NOTICE = 'DEMO: simulated hospitals, not a real referral. Don\'t use it for real clinical decisions.';
+// receipt headline when the server never got the referral (practice mode)
+const PRACTICE_HEAD = 'Practice referral (nothing was sent)';
 function receiptRows(ref) {
   const z = ZIPS[ref.referring_clinic_zip], h = hubById(ref.target_hub_id), near = nearIn(S.nearUsed, ref.referring_clinic_zip);
   const s = h && (h.specialists || []).find(x => x.id === ref.assigned_specialist_id);
@@ -1157,7 +1164,8 @@ function receiptRows(ref) {
   const wait = `${plural(ref.estimated_wait_days, 'day')}, around ${inDays(ref.estimated_wait_days)}`;
   return [
     ['Referral #', ref.referral_id],
-    ['From', near ? `Near ${near} (clinic's own postal code not in RUSH)` : `${ref.referring_clinic_zip}${z ? `, ${z[2]}` : ''}`],
+    ['From', near ? (S.nearUsed.typed ? `${S.nearUsed.typed} (clinic's own code), near ${near}` : `Near ${near}`)
+      : `${ref.referring_clinic_zip}${z ? `, ${z[2]}` : ''}`],
     ['To', ref.target_hub_name],
     ...(ref.manual_override ? [['Chosen by', `You (RUSH suggested ${ref.suggested_hub_name})`]] : []),
     ['Specialist', s ? s.name : 'Waiting list'],
@@ -1168,13 +1176,15 @@ function receiptRows(ref) {
   ];
 }
 function renderReceipt(ref) {
+  const head = S.practiceReceipt ? PRACTICE_HEAD : 'Referral sent';
+  $('#rcH').textContent = head; $('#v3').setAttribute('aria-label', head);
   $('#rcId').textContent = ref.referral_id;
   $('#rcLine').textContent = `to ${ref.target_hub_name} · seen in about ${plural(ref.estimated_wait_days, 'day')}`;
   $('#rcList').innerHTML = receiptRows(ref).map(([k, v]) => `<dt>${esc(k)}</dt><dd>${esc(v)}</dd>`).join('');
   $('#rcMsg').textContent = '';
 }
 async function copyReceipt() {
-  const text = [DEMO_NOTICE, ...receiptRows(S.referral).map(([k, v]) => `${k}: ${v}`)].join('\n');
+  const text = [DEMO_NOTICE, ...(S.practiceReceipt ? [PRACTICE_HEAD] : []), ...receiptRows(S.referral).map(([k, v]) => `${k}: ${v}`)].join('\n');
   try { await navigator.clipboard.writeText(text); $('#rcMsg').textContent = 'Copied.'; }
   catch { $('#rcMsg').textContent = 'Copy didn\'t work here. Select the text instead.'; }
 }
@@ -1255,6 +1265,7 @@ function boot() {
   renderConn();
 
   $('#printDemo').textContent = DEMO_NOTICE;
+  $('#footDemo').textContent = DEMO_NOTICE;
   $('#findBtn').addEventListener('click', findHospital);
   $$('.ex').forEach(b => b.addEventListener('click', () => usePreset(+b.dataset.i)));
   $('#town').innerHTML = '<option value="">Choose a town</option>' + Object.entries(ZIPS)
