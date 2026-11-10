@@ -136,6 +136,7 @@ kbd{font:600 14px/1 var(--mono);padding:3px 5px;border-radius:3px;background:var
 .ot.mine{background:var(--red);color:#fff}
 .opt.no .on,.opt.no .om{opacity:.65}
 .why{margin-top:16px;color:var(--ink-2);font-size:16px}
+.check:not([hidden]) + .check{margin-top:10px}   /* the specialty-mismatch warning can sit above the guess warning */
 .why b{color:var(--ink)}
 .why .worse{color:var(--red-dk)}
 .actions{display:flex;flex-direction:column;gap:10px;margin-top:20px}
@@ -299,6 +300,7 @@ details.hosp > summary .muted{font-weight:400;font-size:14px;margin-left:6px}
         <div class="fact"><div class="k">Needs</div><div class="v" id="fNeed"></div><div class="s" id="fNeedS"></div></div>
       </div>
     </div>
+    <p class="check" id="mismatchNote" hidden></p>
     <p class="check" id="checkNote" hidden></p>
     <p class="why" id="whyText"></p>
     <div class="actions">
@@ -1027,13 +1029,19 @@ function renderTarget() {
   $('#toLabel').textContent = t.mine ? 'Your pick: send this patient to' : 'Send this patient to';
   $('#hospName').textContent = hub.name;
   $('#hospSub').textContent = `${townOf(hub) ? townOf(hub) + ' · ' : ''}${t.specialist ? `${t.specialist.name} can take them` : 'joins the waiting list'} · ${Math.round(loadPct(hub))}% full (${b.word.toLowerCase()})`;
-  // One warning banner at a time, in priority order: the practice-mode / keyword-guess warning (#checkNote), then
-  // this override note. While the guess warning shows, the override is still visible in the heading ("Your pick"),
-  // the command bar and the picker.
-  const on = $('#overrideNote'), showOverride = t.mine && !triageSource(p).check;
+  // Warnings, in priority order:
+  //   1. specialty mismatch (#mismatchNote): the doctor chose a hospital that doesn't offer the specialty. It changes
+  //      where the patient goes, so it is always shown, even next to the guess warning. It carries "Use RUSH's pick".
+  //   2. practice-mode / keyword-guess warning (#checkNote, set in renderMatch)
+  //   3. the override note (#overrideNote), hidden only while one of the above shows
+  // The override stays visible in the heading ("Your pick"), the command bar and the picker either way.
+  const mismatch = t.mine && !t.offers, guess = triageSource(p).check;
+  const mm = $('#mismatchNote'), on = $('#overrideNote'), showOverride = t.mine && !mismatch && !guess;
+  const useRush = `<button class="linkbtn" type="button" id="useRush">Use RUSH's pick</button>`;
+  mm.hidden = !mismatch;
+  mm.innerHTML = mismatch ? `⚠ This hospital doesn't list ${esc(plainSp(p.primary_specialty_required))} care. RUSH suggested ${esc(r.best.hub.name)}. ${useRush}` : '';
   on.hidden = !showOverride;
-  on.innerHTML = '';
-  if (showOverride) on.innerHTML = `${t.offers ? '' : `⚠ Doesn't list ${esc(plainSp(p.primary_specialty_required))} care. `}RUSH suggested ${esc(r.best.hub.name)}. <button class="linkbtn" type="button" id="useRush">Use RUSH's pick</button>`;
+  on.innerHTML = showOverride ? `RUSH suggested ${esc(r.best.hub.name)}. ${useRush}` : '';
   $('#fDist').textContent = `${t.dist.toFixed(0)} km`;
   const near = nearIn(S.nearUsed, p.home_clinic_zip);   // set when the code came from the Nearest town picker
   $('#fDistS').textContent = driveText(t.dist) + (near ? (t.dist < 1 ? ` (near ${near})` : `, from near ${near}`) : '');
@@ -1401,7 +1409,7 @@ function boot() {
   $('#backBtn').addEventListener('click', backToNotes);
   $('#pickBtn').addEventListener('click', () => { if (!S.sending) togglePicker(); });
   $('#pickList').addEventListener('click', e => { const b = e.target.closest('.opt'); if (b) choose(b.dataset.id); });
-  $('#overrideNote').addEventListener('click', e => { if (e.target.id === 'useRush') choose(S.plan.best.hub.hub_id); });
+  for (const id of ['#overrideNote', '#mismatchNote']) $(id).addEventListener('click', e => { if (e.target.id === 'useRush') choose(S.plan.best.hub.hub_id); });
   $('#copyBtn').addEventListener('click', copyReceipt);
   $('#printBtn').addEventListener('click', () => window.print());
   $('#newBtn').addEventListener('click', newPatient);
