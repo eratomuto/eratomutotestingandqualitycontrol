@@ -456,6 +456,7 @@ const S = {
   hubs: [], sig: {}, baseline: {},
   surged: new Set(), mock: null, provErr: false,
   patient: null, plan: null, choice: null, referral: null,
+  shownAt: -Infinity,       // when the current screen appeared (performance.now()), for the shortcut cooldown
   practiceReceipt: false,   // the current receipt came from practice mode: the server never got it
   running: false, matchedLive: false,   // matchedLive: the current match came from the real server
   near: null,      // {zip, town, typed}: the code came from the Nearest town picker; typed = the doctor's own code, or ''
@@ -687,8 +688,11 @@ function cmdForView() {
   }
   if (S.view === 'v3') return cmd('DONE', `${S.practiceReceipt ? PRACTICE_HEAD : 'Sent'}. Hit ${K('NEXT PATIENT')} for the next one.`, 'done');
 }
+// After any screen change, Ctrl/Cmd+Enter and F1-F3 are ignored for this long, so quick repeated presses
+// can't act on a screen the doctor hasn't seen yet. Clicks are not affected.
+const SHORTCUT_COOLDOWN_MS = 800;
 function show(v, focusEl) {
-  S.view = v;
+  S.view = v; S.shownAt = performance.now();
   ['v1', 'v2', 'v3'].forEach(id => { $('#' + id).hidden = id !== v; });
   cmdForView();
   window.scrollTo({top:0, behavior: reduced() ? 'auto' : 'smooth'});
@@ -1301,7 +1305,7 @@ function boot() {
     const go = e.key === 'Enter' && (e.ctrlKey || e.metaKey);   // ctrl+enter = whatever the big button says
     if (!preset && !go) return;
     e.preventDefault();                                          // also stops a held F1 from reopening browser help
-    if (e.repeat) return;
+    if (e.repeat || performance.now() - S.shownAt < SHORTCUT_COOLDOWN_MS) return;
     if (preset) usePreset(+e.key[1] - 1);
     else if (SHORTCUT_ACTION[S.view]) SHORTCUT_ACTION[S.view]();
   });
