@@ -753,15 +753,18 @@ const ZIP_BAR = {
   format:  `Fix the postal code or ${K('PICK THE NEAREST TOWN')}, then hit FIND HOSPITAL.`,
   unknown: `${K('PICK THE NEAREST TOWN')}, then hit FIND HOSPITAL.`,
 };
-function updateZipHelp() {
+// settled=false while the doctor is still typing: no picker and no "pick a town" nag until the field loses focus or Find is pressed
+function updateZipHelp(settled = true) {
   const zip = normZip($('#zip').value), el = $('#zipHelp'), bad = zipProblem(zip), near = nearIn(S.near, zip);
+  const typing = !settled && !near && !!bad && bad !== 'empty';
   el.classList.remove('warn');
   $('#zipErr').hidden = true; $('#zip').removeAttribute('aria-invalid');
   if (bad === 'empty') el.textContent = 'Where the patient is now.';
   else if (near) el.textContent = `Near ${near}. Distances will be approximate.`;
   else if (!bad) el.textContent = `${ZIPS[zip][2]} ✓`;
+  else if (typing && bad !== 'letter') el.textContent = 'Postal codes look like B1P 5E7.';   // no nagging mid-typing
   else { el.textContent = ZIP_HELP[bad]; el.classList.add('warn'); }
-  $('#townWrap').hidden = bad === 'empty' || (!bad && !near);   // picker shows for any code RUSH can't use as typed
+  $('#townWrap').hidden = bad === 'empty' || typing || (!bad && !near);   // picker shows for a settled code RUSH can't use as typed
   $('#town').value = near ? zip : '';
 }
 function pickTown() {
@@ -1204,8 +1207,12 @@ function boot() {
   $('#town').innerHTML = '<option value="">Choose a town</option>' + Object.entries(ZIPS)
     .sort((a, b) => a[1][2].localeCompare(b[1][2])).map(([z, v]) => `<option value="${z}">${esc(v[2])}</option>`).join('');
   $('#town').addEventListener('change', pickTown);
-  $('#zip').addEventListener('input', () => { S.near = null; updateZipHelp(); });   // typing by hand means an exact code
-  $('#zip').addEventListener('blur', () => { const v = normZip($('#zip').value); if (v) $('#zip').value = v; updateZipHelp(); });
+  $('#zip').addEventListener('input', () => { S.near = null; updateZipHelp(false); });   // typing by hand means an exact code
+  $('#zip').addEventListener('blur', e => {
+    const v = normZip($('#zip').value); if (v) $('#zip').value = v;
+    // focus moving to Find: keep the layout still so the click lands; Find shows the picker itself
+    updateZipHelp(!(e.relatedTarget && e.relatedTarget === $('#findBtn')));
+  });
   $('#notes').addEventListener('input', () => {
     $$('.ex').forEach(b => b.setAttribute('aria-pressed', 'false'));
     if (!$('#notesErr').hidden) { $('#notesErr').hidden = true; $('#notes').removeAttribute('aria-invalid'); cmdForView(); }
