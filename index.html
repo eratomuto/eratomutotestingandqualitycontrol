@@ -1030,11 +1030,9 @@ function renderTarget() {
   on.hidden = !showOverride;
   on.innerHTML = '';
   if (showOverride) on.innerHTML = `${t.offers ? '' : `⚠ Doesn't list ${esc(plainSp(p.primary_specialty_required))} care. `}RUSH suggested ${esc(r.best.hub.name)}. <button class="linkbtn" type="button" id="useRush">Use RUSH's pick</button>`;
-  const known = !!ZIPS[p.home_clinic_zip];
   $('#fDist').textContent = `${t.dist.toFixed(0)} km`;
   const near = nearIn(S.nearUsed, p.home_clinic_zip);   // set when the code came from the Nearest town picker
-  $('#fDistS').textContent = !known ? 'distance is a guess'
-    : driveText(t.dist) + (near ? (t.dist < 1 ? ` (near ${near})` : `, from near ${near}`) : '');
+  $('#fDistS').textContent = driveText(t.dist) + (near ? (t.dist < 1 ? ` (near ${near})` : `, from near ${near}`) : '');
   $('#fWait').textContent = plural(t.wait, 'day');
   $('#fWaitS').textContent = `around ${inDays(t.wait)}`;
   $('#fNeed').textContent = p.primary_specialty_required;
@@ -1149,15 +1147,13 @@ function drawMap(pick, animate) {
   const pll = pick.latitude != null ? [pick.latitude, pick.longitude] : ZIPS[pick.postal_code];
   const [bx, by] = pll ? proj(pll[0], pll[1]) : [0, 0];
 
-  const z = ZIPS[p.home_clinic_zip], coordsFound = !!z, nearTown = nearIn(S.nearUsed, p.home_clinic_zip);
-  let [cx, cy] = z ? proj(z[0], z[1]) : [0, 0];
+  const z = ZIPS[p.home_clinic_zip], nearTown = nearIn(S.nearUsed, p.home_clinic_zip);   // step 1 only lets codes in ZIPS through
+  let [cx, cy] = proj(z[0], z[1]);
 
-  if (coordsFound) {
-    const near = S.hubs.find(h => { const ll = h.latitude != null ? [h.latitude, h.longitude] : ZIPS[h.postal_code]; if (!ll) return false; const [hx, hy] = proj(ll[0], ll[1]); return Math.hypot(hx - cx, hy - cy) < 10; });
-    if (near) cx += (TOWN[near.hub_id] || ['', 'r'])[1] === 'l' ? 18 : -18;
-  }
+  const hubAtClinic = S.hubs.find(h => { const ll = h.latitude != null ? [h.latitude, h.longitude] : ZIPS[h.postal_code]; if (!ll) return false; const [hx, hy] = proj(ll[0], ll[1]); return Math.hypot(hx - cx, hy - cy) < 10; });
+  if (hubAtClinic) cx += (TOWN[hubAtClinic.hub_id] || ['', 'r'])[1] === 'l' ? 18 : -18;
 
-  if (coordsFound && pll) {
+  if (pll) {
     const [ax, ay] = [cx, cy];
     const dx = bx - ax, dy = by - ay;
     if (hubDistance(pick, p.home_clinic_zip) >= 1) {
@@ -1178,19 +1174,14 @@ function drawMap(pick, animate) {
       <text x="${x}" y="${y + (isPick ? 5 : 4)}" text-anchor="middle" style="font-size:${isPick ? 14 : 11}px">H</text></g>
       <text class="m-town${isPick ? ' pick' : ''}" x="${tx}" y="${y + 4}" text-anchor="${side === 'l' ? 'end' : 'start'}">${esc(townOf(h))}</text>`;
   }).join('');
-  let clinic = '';
-  if (coordsFound) {
-    clinic = `<g class="m-clinic"><circle cx="${cx}" cy="${cy}" r="7"/></g>
-      <text class="m-town" x="${cx}" y="${cy - 12}" text-anchor="middle">${nearTown ? 'Clinic (approx.)' : 'Clinic'}</text>`;
-  }
+  const clinic = `<g class="m-clinic"><circle cx="${cx}" cy="${cy}" r="7"/></g>
+    <text class="m-town" x="${cx}" y="${cy - 12}" text-anchor="middle">${nearTown ? 'Clinic (approx.)' : 'Clinic'}</text>`;
   svg.innerHTML = MAP_BASE + route + hosp + clinic;
   const grey = `Grey hospitals don't offer ${plainSp(sp)} care.`;
-  $('#mapCap').textContent = coordsFound
-    ? (hubDistance(pick, p.home_clinic_zip) < 1
-      ? (nearTown ? `The clinic is near ${nearTown}, close to ${pick.name}, so there's no drive. ${grey}`
-              : `The clinic and ${pick.name} are both in ${townOf(pick)}, so there's no drive. ${grey}`)
-      : `Route from ${nearTown ? `near ${nearTown}` : 'the clinic'} to ${pick.name} in ${townOf(pick)}. ${nearTown ? 'The start point is approximate. ' : ''}${grey}`)
-    : `RUSH doesn't know where postal code ${p.home_clinic_zip} is, so no route is drawn.`;
+  $('#mapCap').textContent = hubDistance(pick, p.home_clinic_zip) < 1
+    ? (nearTown ? `The clinic is near ${nearTown}, close to ${pick.name}, so there's no drive. ${grey}`
+                : `The clinic and ${pick.name} are both in ${townOf(pick)}, so there's no drive. ${grey}`)
+    : `Route from ${nearTown ? `near ${nearTown}` : 'the clinic'} to ${pick.name} in ${townOf(pick)}. ${nearTown ? 'The start point is approximate. ' : ''}${grey}`;
   const road = $('#road');
   if (road && animate && !reduced()) {
     const len = road.getTotalLength(), line = $('#roadLine');
